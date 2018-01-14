@@ -75,8 +75,7 @@ class cat_EMS(models.Model):
 	reg_date = models.DateField(null = False)
 	
 class neutered(models.Model):
-	id = models.AutoField(primary_key = True)
-	cat = models.ForeignKey('cat',on_delete = models.CASCADE,null = False)
+	catId = models.OneToOneField('cat')
 	date = models.DateField()
 	
 class microchip(models.Model):
@@ -91,33 +90,62 @@ class show(models.Model):
 	date = models.DateField(null = False)
 	show_orginizer = models.CharField(max_length = 30)
 
-class show_entry(models.Model):
+class show_entry(models.Model):   
+	class Meta:
+		unique_together = (('showId', 'catId'),)
+	id = models.AutoField(primary_key = True)
 	showId =  models.ForeignKey('show',on_delete = models.CASCADE)
 	catId = models.ForeignKey('cat',on_delete = models.CASCADE) 
-	show_nr = models.IntegerField(null = False)
+	cat_show_number = models.IntegerField(null = False) # what number this cat is on the show. 
 
+class litter:
+	catId = models.ForeignKey('show_entry',on_delete = models.CASCADE) 
+	letterId = models.CharField(max_length = 2)
 
 class judge(models.Model):
 	id = models.AutoField(primary_key = True)
-	cat1 = models.BooleanField()
-	cat2 = models.BooleanField()
-	cat3 = models.BooleanField()
-	cat4 = models.BooleanField()
-	cat5 = models.BooleanField()
+	name = models.CharField(max_length = 50)
+	country = models.CharField(max_length = 3)
+
+class category_judge(models.Model):
+	judgeId = models.ForeignKey('judge',on_delete = models.CASCADE) 
+	categoryId = models.ForeignKey('category',on_delete = models.CASCADE) 
+	
+class category(models.Model):
+	id = models.AutoField(primary_key = True)
+	name = models.CharField(max_length = 10)
 
 class judgement(models.Model):
 	id = models.AutoField(primary_key = True)
-	cat = models.ForeignKey('cat',on_delete = models.CASCADE)
+	entryId = models.ForeignKey('show_entry',on_delete = models.CASCADE)
 	showId = models.ForeignKey('show',on_delete = models.CASCADE)
 	judge = models.ForeignKey('judge',on_delete = models.CASCADE)
-	certId = models.IntegerField(null = False)
 	attendence = models.BooleanField()
 	ex = models.IntegerField()
 	cert = models.BooleanField()
 	biv = models.BooleanField()
-	litter = models.BooleanField()
-	color = models.BooleanField()
+	color =  models.ForeignKey('cat_EMS',on_delete = models.CASCADE)
 	comment = models.CharField(max_length = 2048)
-	show_nr = models.IntegerField()
 
-
+class judgementLitter(models.Model):
+	id = models.AutoField(primary_key = True)
+	showId = models.ForeignKey('show',on_delete = models.CASCADE)
+	judge = models.ForeignKey('judge',on_delete = models.CASCADE)
+	attendence = models.BooleanField()
+	rank = models.IntegerField()
+	comment = models.CharField(max_length = 2048)
+	litter_nr = models.CharField(max_length = 2)
+	
+class cert_judgement(models.Model):
+	id = models.AutoField(primary_key = True)
+	cat = models.ForeignKey('cat',on_delete = models.CASCADE)
+	judgement = models.ForeignKey('judgement',on_delete = models.CASCADE)
+	cert = models.ForeignKey('cert',on_delete = models.CASCADE) 
+	date = models.DateField(null = False)
+	
+class cert:
+	id = models.AutoField(primary_key = True)
+	certName = models.CharField(max_length = 6, null = False)
+	certRank =  models.IntegerField(null = False)
+	predecessor = models.ForeignKey('cert',on_delete = models.CASCADE)
+	neutered = models.BooleanField()
