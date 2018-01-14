@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp -r /kkidb_static/* /opt/django-env/kkidb/

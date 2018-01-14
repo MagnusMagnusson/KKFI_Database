@@ -1,0 +1,1 @@
+{"virtualbox":{"/vagrant":{"type":"virtualbox","guestpath":"/vagrant","hostpath":"C:/Users/MagnusMagnusson/Documents/GitHub/Gagnagrunnur_kynjakatta","disabled":false,"__vagrantfile":true},"/kkidb_static":{"guestpath":"/kkidb_static","hostpath":"C:/Users/MagnusMagnusson/Documents/GitHub/Gagnagrunnur_kynjakatta/Static_Project","disabled":false,"__vagrantfile":true}}}

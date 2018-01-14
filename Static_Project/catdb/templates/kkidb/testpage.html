@@ -1,0 +1,26 @@
+﻿{% if cats %}
+    <table style ="border:1px solid black">
+        <tr style ="border:1px solid black">
+            <th>id</th>
+            <th>name</th>
+            <th>gender</th>
+            <th>Father</th>
+            <th>Mother</th>
+        </trstyle>
+    {% for mja in cats %}
+        <tr style ="border:1px solid black">
+            <td style ="border:1px solid black">{{mja.id}}</td>
+            <td style ="border:1px solid black"><a href = "../cat?view={{mja.id}}">{{mja.name}}</a></td>
+            {% if mja.gender%}
+                <td style ="border:1px solid black">Female</td>
+            {% else %}
+                <td style ="border:1px solid black">Male</td>
+            {% endif %}
+            <td style ="border:1px solid black">    <p>Sire:<a href = "../cat?view={{mja.sire.cat.id}}">{{mja.sire.cat.name}}</a></p></td>
+            <td style ="border:1px solid black">    <p>Dam:<a href = "../cat?view={{mja.dam.cat.id}}">{{mja.dam.cat.name}}</a></p></td>
+        </trstyle>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No cats are available. they are all married.</p>
+{% endif %}

@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        test
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+   {% if shows %}
+    <p> A total of {{ shows|length }} shows registered:</p>
+        <table>
+            <thead>
+                <tr>
+                <th>ID</th>
+                <th>Show</th>               
+                <th>Date</th>               
+                <th>Orginizer</th>
+                </tr>
+            </thead>
+            <tbody>
+        {% for show in shows %}
+            <tr>
+            <td><a href = "manageshow?show={{show.id}}">{{show.id}}</a></td>
+            <td>{{show.name}}</td>
+            <td>{{show.date}}</td>
+            <td>{{show.show_orginizer}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No show has been registered. Why not register one now?</p>
+    {% endif %}
+</body>
+</html>

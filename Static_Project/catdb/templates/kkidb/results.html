@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        table,tr,th,thead,tbody{
+            border: 1px solid #AAAAAA;
+        }
+        td{
+            border-left: 1px solid black;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    {% if cats %}
+    <p> A total of {{ cats|length }} cats found:</p>
+        <table>
+            <thead>
+                <tr>
+                <th>Name</th>
+                <th>Gender</th>               
+                <th>born</th>               
+                <th>registered</th>
+                <th>Dam</th>
+                <th>sire</th>
+                </tr>
+            </thead>
+            <tbody>
+        {% for member in cats %}
+            <tr>
+            <td><a href = "../cat?view={{member.id}}">{{member.name}}</a></td>
+            <td>{{member.gender}}</td>
+            <td>{{member.birth}}</td>
+            <td>{{member.registered}}</td>
+            <td><a href = "../cat?view={{member.dam.cat.id}}">{{member.dam.cat.name}}</a></td>
+            <td><a href = "../cat?view={{member.sire.cat.id}}">{{member.sire.cat.name}}</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>
