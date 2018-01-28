@@ -127,6 +127,14 @@ class judgement(models.Model):
 	color =  models.ForeignKey('cat_EMS',on_delete = models.CASCADE)
 	comment = models.CharField(max_length = 2048)
 
+		
+class cert(models.Model):
+	id = models.AutoField(primary_key = True)
+	certName = models.CharField(max_length = 6, null = False)
+	certRank =  models.IntegerField(null = False)
+	predecessor = models.ForeignKey('cert',on_delete = models.CASCADE)
+	neutered = models.BooleanField()
+
 class judgementLitter(models.Model):
 	id = models.AutoField(primary_key = True)
 	showId = models.ForeignKey('show',on_delete = models.CASCADE)
@@ -142,10 +150,3 @@ class cert_judgement(models.Model):
 	judgement = models.ForeignKey('judgement',on_delete = models.CASCADE)
 	cert = models.ForeignKey('cert',on_delete = models.CASCADE) 
 	date = models.DateField(null = False)
-	
-class cert:
-	id = models.AutoField(primary_key = True)
-	certName = models.CharField(max_length = 6, null = False)
-	certRank =  models.IntegerField(null = False)
-	predecessor = models.ForeignKey('cert',on_delete = models.CASCADE)
-	neutered = models.BooleanField()

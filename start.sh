@@ -1,20 +1,34 @@
 #!/bin/bash
 echo "Starting provision"
 echo "Installing updates, upgrades, and enviroments"
- apt-get update && apt-get -y upgrade
- apt-get -y install apache2 python-pip libapache2-mod-wsgi
+apt-get install openssh-server
+apt-get update && apt-get -y upgrade
+apt-get -y install apache2 python-pip libapache2-mod-wsgi 
+apt-get -y install  python-dev libpq-dev postgresql postgresql-contrib
+
  apt-get install debconf-utils
  export DEBIAN_FRONTEND=noninteractive
- apt-get -y install mysql-server-5.5 --fix-missing
  apt-get -y install virtualenv --fix-missing
 cd /opt/
 virtualenv django-env
 cd django-env
 . bin/activate
 
+su - postgres
+echo 'database setup'
+
+echo "CREATE DATABASE kkidb;
+CREATE USER kkidb WITH PASSWORD 'catdb';
+ALTER ROLE kkidb SET client_encoding TO 'utf8';
+ALTER ROLE kkidb SET default_transaction_isolation TO 'read committed';
+ALTER ROLE kkidb SET teimzone to 'UTC';
+GRANT ALL PRIVILAGES ON DATABASE kkidb TO kkidb;" | sudo -u postgres psql;
+
+
 echo 'installing Django'
+sudo python -m pip install --upgrade pip
 sudo pip install django
-django-admin startproject kkidb
+sudo django-admin startproject kkidb
 cat > /etc/apache2/conf-available/kkidb.conf <<EOF
 WSGIScriptAlias / /opt/django-env/kkidb/kkidb/wsgi.py
 WSGIPythonPath /opt/django-env/kkidb:/opt/django-env/lib/python2.7/site-packages
@@ -26,8 +40,8 @@ Require all granted
 </Directory>
 EOF
 
-sudo pip install django
-sudo apt-get install python-mysqldb
+sudo -y apt-get install python-psycopg2 --fix-missing
+sudo pip install django psycopg2
 sudo a2enconf kkidb
 sudo systemctl restart apache2.service 
 
@@ -36,9 +50,6 @@ cd kkidb
 sudo python manage.py startapp catdb
 cd ..
 sudo cp -r /../../kkidb_static/* kkidb/
-sudo mysql < kkidb/MySql/datainit.sql
-cd kkidb
-sudo python manage.py migrate
-sudo python manage.py makemigrations
+
 
 echo 'I HAVE BEEN SUMMONED!'

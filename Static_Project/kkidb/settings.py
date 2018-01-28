@@ -77,12 +77,12 @@ WSGI_APPLICATION = 'kkidb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'kkidb',
-	'USER': 'root',
-	'PASSWORD':'',
-	'HOST':'localhost',
-	'PORT':'3306'
+		'USER': 'kkidb',
+		'PASSWORD':'catdb',
+		'HOST':'localhost',
+		'PORT':'5432'
 	 }
 }
 
