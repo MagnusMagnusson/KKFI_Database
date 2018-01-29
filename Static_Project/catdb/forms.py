@@ -92,36 +92,9 @@ class form_add_show(forms.Form):
 		required = True,
 		max_length = 30
 		)
-	reg_nr = forms.CharField(
-		required = True,
-		label = "Reg_Nr",
-		max_length = 50
-		)
-	gender = forms.ChoiceField(
-		label = "gender",
-		required = True, 
-		widget = forms.RadioSelect,
-		choices = genderChoices
-		)
-	birth = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
-	registered = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
-	neutered = forms.BooleanField(required = False)
-	neutered_Date = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
-	sire = forms.CharField(
-		label = "sire",
-		max_length = 30,
-		required = False,
-		)
-	dam = forms.CharField(
-		label = "dam", 
-		max_length = 30, 
-		required = False
-		)
-	microchip = forms.CharField(
-		label = "chip",
+	organizer = forms.CharField(
 		required = False,
 		max_length = 30
 		)
-
-	
+	date = forms.DateField(required = True, widget=extras.SelectDateWidget(years=range( now.year+2,now.year-2,-1)))
 	

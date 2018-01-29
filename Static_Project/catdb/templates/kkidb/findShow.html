@@ -23,7 +23,7 @@
             <tbody>
         {% for show in shows %}
             <tr>
-            <td><a href = "manageshow?show={{show.id}}">{{show.id}}</a></td>
+            <td><a href = "manage?show={{show.id}}">{{show.id}}</a></td>
             <td>{{show.name}}</td>
             <td>{{show.date}}</td>
             <td>{{show.show_orginizer}}</td>
@@ -34,5 +34,6 @@
     {% else %}
     <p> No show has been registered. Why not register one now?</p>
     {% endif %}
+    <a href="new">Register new show</a>
 </body>
 </html>
