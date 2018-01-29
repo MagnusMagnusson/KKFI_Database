@@ -129,4 +129,37 @@ def find_cat_names(request):
 		return JsonResponse(D)
 
 def api_create_show(request):
-	return False
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+
+	try:
+		post =  request.POST
+		orginizer = post['organizer']
+		name =  smart_text(post['name'],encoding='utf-8',strings_only=False,errors='strict')
+		S = show();
+		S.name = name 
+		S.show_orginizer = orginizer
+
+		
+		day = int(post['date_day'])
+		month = int(post['date_month'])
+		year = int(post['date_year'])
+		S.date = datetime.date(year, month, day)
+
+		S.save()
+		D = {
+			'success':True,
+			'id':S.id
+			}
+		return JsonResponse(D)
+	except Exception as ex:		
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+		}
+		return JsonResponse(D)

@@ -7,8 +7,7 @@ from django.http import JsonResponse
 from django.template import loader
 from django.utils.encoding import *
 from catdb.models import *
-from .forms import SearchCat
-from .forms import AddCat
+from .forms import *
 import time
 import datetime
 from API import *
@@ -142,6 +141,14 @@ def findshow(request):
 		context = {
 		}
 	return HttpResponse(template.render(context, request))
+
+def addshow(request):
+	form = form_add_show()
+	template = loader.get_template('kkidb/AddShow.html')
+	context = {
+		'form': form 
+		}
+	return HttpResponse(template.render(context,request))
 
 
 
