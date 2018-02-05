@@ -140,7 +140,7 @@ class cert(models.Model):
 	id = models.AutoField(primary_key = True)
 	certName = models.CharField(max_length = 6, null = False)
 	certRank =  models.IntegerField(null = False)
-	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT)
+	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT,null = True)
 	neutered = models.BooleanField()
 
 class judgementLitter(models.Model):

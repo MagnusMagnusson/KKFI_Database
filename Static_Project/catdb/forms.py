@@ -98,3 +98,13 @@ class form_add_show(forms.Form):
 		)
 	date = forms.DateField(required = True, widget=extras.SelectDateWidget(years=range( now.year+2,now.year-2,-1)))
 	
+
+class form_show_entry_add(forms.Form):
+	show = forms.IntegerField();
+	cat = forms.CharField(
+		required = True,
+		max_length = 30
+		)
+	entry_nr = forms.IntegerField();
+
+	
