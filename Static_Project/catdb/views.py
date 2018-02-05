@@ -109,7 +109,7 @@ def catview(request):
 	if(len(c) != 1):
 		context = {}
 	else:
-		n = neutered.objects.filter(cat = c[0])
+		n = neutered.objects.filter(catId = c[0])
 		if(not n.exists()):
 			n = None
 		context ={
@@ -151,7 +151,13 @@ def addshow(request):
 	return HttpResponse(template.render(context,request))
 
 
-
+def view_ShowRegisterEntry(request):
+	form = form_show_entry_add()
+	template = loader.get_template('kkidb/show/ShowAddEntry.html')
+	context = {
+		'form': form 
+		}
+	return HttpResponse(template.render(context,request))
 
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')

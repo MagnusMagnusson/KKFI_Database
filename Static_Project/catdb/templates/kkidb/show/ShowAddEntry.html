@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        test
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    
+   <h2>Create old Show</h2> 
+<form id="addButton" action="POST">
+    <p>{{nom}}</p>
+    {% for field in form %}
+    <p>{{field.label_tag}}</p>{{field}}<br/>
+    {% endfor %}
+    {% csrf_token %}
+<input type="submit" ></input>
+</form>
+    <div id="message"></div>
+    <div id="catList">lol</div>
+</body>
+</html>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $("#addButton").submit(function (event) {
+            event.preventDefault();
+
+            var form = document.forms[0];
+            var D = {};
+            var inputs = form.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            var inputs = form.getElementsByTagName('select');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            D.cat = FORM.finalList($("input[name = 'cat']").val())[0].id;
+            $.ajax({
+                type: "POST",
+                url: "../api/shows/register/",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        $('#message').html("<h2> IT WORKED. New show at " + d.id + " </h2>")
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+            return false;
+        });
+
+        FORM = {
+            nameList: [],
+            update_message: function (arr) {
+                mess = "found " + arr.length + " cats: <ul>";
+                for (var i = 0; i < arr.length; i++) {
+                    mess += "<li>" + arr[i].name + " : " + arr[i].id + " </li>";
+                }
+                mess += "</ul>"
+                $('#catList').html("<h2> kitties: " + mess + " </h2>")
+            },
+            finalList: function (x) {
+                x = x.toLowerCase();
+                var foundName = []
+                var _list = this.nameList
+                for (var i = 0; i < _list.length; i++) {
+                    if (_list[i].name.toLowerCase().indexOf(x) != -1) {
+                        foundName.push(_list[i]);
+                    }
+                }
+                return foundName;
+            }
+        };
+
+        $("input[name = 'cat']").on('input', function () {
+            var val = $("input[name = 'cat']").val();
+            if (val.length == 3) {
+                FORM.nameList = [];
+                getCatNames(val, 'sire');
+                getCatNames(val, 'dam');
+            }
+            else {
+                FORM.update_message(FORM.finalList(val));
+            }
+        });
+
+        function getCatNames(name, type) {
+            D = { 'name': name, 'gender': type }
+            $.ajax({
+                type: "GET",
+                url: "../find_cat_name/",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        for(let c of d.cats) {
+                            FORM.nameList.push(c);
+                        }
+                        FORM.update_message(FORM.nameList);
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+        }
+    })
+</script>

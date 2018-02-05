@@ -16,7 +16,7 @@ class people(models.Model):
 	phone = models.CharField(max_length = 10)
 	member_id = models.IntegerField()
 	comment = models.CharField(max_length = 144)
-	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL)
+	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL,null=True)
 
 class cat_owners(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -33,7 +33,7 @@ class cattery(models.Model):
 class cat(models.Model):
 	id = models.AutoField(primary_key = True)
 	reg_nr = models.CharField(max_length = 5)
-	name = models.CharField(max_length = 35)
+	name = models.CharField(max_length = 50)
 	gender = models.BooleanField()
 	birth = models.DateField()
 	registered = models.DateField()
@@ -41,7 +41,7 @@ class cat(models.Model):
 	sire = models.ForeignKey('parents',on_delete=models.SET_NULL, related_name = 'sire',null = True,blank = True)
 	comments = models.CharField(max_length = 144)
 	type = models.CharField(max_length = 3)
-	cattery = models.ForeignKey('cattery',on_delete=models.PROTECT)
+	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL,null=True)
 
 class parents(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -55,8 +55,9 @@ class ghost_cat(models.Model):
 	name = models.CharField(max_length = 50)
 	birth = models.DateField()
 	microchip = models.CharField(max_length = 30)
-	dam = models.ForeignKey('parents',on_delete = models.SET_NULL,related_name='ghost_dam')
-	sire = models.ForeignKey('parents',on_delete = models.SET_NULL,related_name = 'ghost_sire')
+	dam = models.ForeignKey('parents',on_delete = models.SET_NULL,related_name='ghost_dam',null=True)
+	sire = models.ForeignKey('parents',on_delete = models.SET_NULL,related_name = 'ghost_sire',null=True)
+	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL,null=True)
 	
 class imp_cat(models.Model):
     id = models.AutoField(primary_key = True)
@@ -139,7 +140,7 @@ class cert(models.Model):
 	id = models.AutoField(primary_key = True)
 	certName = models.CharField(max_length = 6, null = False)
 	certRank =  models.IntegerField(null = False)
-	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT)
+	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT,null = True)
 	neutered = models.BooleanField()
 
 class judgementLitter(models.Model):
@@ -157,3 +158,12 @@ class cert_judgement(models.Model):
 	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT)
 	cert = models.ForeignKey('cert',on_delete = models.PROTECT) 
 	date = models.DateField(null = False)
+
+class reward(models.Model):
+	id = models.AutoField(primary_key = True)
+	name = models.CharField(max_length = 30)
+	description = models.CharField(max_length = 1024)
+
+class judgement_reward(models.Model):
+	award = models.ForeignKey('reward',on_delete = models.PROTECT)
+	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT)

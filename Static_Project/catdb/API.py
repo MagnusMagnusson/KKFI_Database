@@ -90,6 +90,7 @@ def form_cat(request):
 			}
 		return JsonResponse(D)
 
+	#finds the name of cats matching {name, gender}
 def find_cat_names(request):
 	if not request.is_ajax():
 		D = {
@@ -163,3 +164,36 @@ def api_create_show(request):
 			'message':str(ex)
 		}
 		return JsonResponse(D)
+
+
+	#{cat:ID, show:ID, entry Nr:INT}
+	#Registers the specific cat to the specific show with the specific number. 
+def api_show_entry_register(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+	try:
+		post =  request.POST
+		catID = post['cat']
+		showID = post['show']
+		entryNr = post['entry_nr']
+		_cat = cat.objects.get(id = catID)
+		_show = show.objects.get(id = showID)
+		_entry = show_entry()
+		_entry.catId = _cat
+		_entry.showId = _show
+		_entry.cat_show_number = int(entryNr)
+		_entry.save()
+		D = {'success':True}
+		return JsonResponse(D)
+	except Exception as ex:		
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+		}
+
+	return JsonResponse(D)
