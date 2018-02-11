@@ -248,4 +248,36 @@ def api_judge_search_name(request):
 			}
 		return JsonResponse(D)
 
+	
+def api_entry_search_name(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	name = request.GET['name']
+	show = request.GET['show']
+	entries = show_entry.objects.all().filter(catId__name__icontains = name, showId = show)
+
+	if(entries.exists()):	
+		entr = []
+		for e in entries:
+			entr.append({
+				'name':e.catId.name,
+				'id':e.catId_id
+				})		
+		D = {
+			'success':True,
+			'count':entries.count(),
+			'judges': entr
+			}
+		return JsonResponse(D)
+	else:		
+		D = {
+			'success':False,
+			'count':0,
+			'error':'No Judge Found'
+			}
+		return JsonResponse(D)
+
 
