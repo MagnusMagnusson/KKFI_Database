@@ -115,6 +115,13 @@ class judge(models.Model):
 	name = models.CharField(max_length = 50)
 	country = models.CharField(max_length = 3)
 
+class judge_show(models.Model):
+	class Meta:
+		unique_together = (('showId', 'judgeId'),)
+	id = models.AutoField(primary_key = True)
+	showId =  models.ForeignKey('show',on_delete = models.CASCADE)
+	judgeId = models.ForeignKey('judge',on_delete = models.CASCADE) 
+
 class category_judge(models.Model):
 	judgeId = models.ForeignKey('judge',on_delete = models.CASCADE) 
 	categoryId = models.ForeignKey('category',on_delete = models.CASCADE) 

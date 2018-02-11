@@ -197,3 +197,55 @@ def api_show_entry_register(request):
 		}
 
 	return JsonResponse(D)
+
+def api_show_judge_register(request):
+	if not request.is_ajax():
+			D = {
+				'success':False,
+				'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+				}
+			return JsonResponse(D)
+	try:
+		post =  request.POST
+		judgeId = post['judge']
+		showID = post['show']
+		_judge = judge.objects.get(id = judgeId)
+		_show = show.objects.get(id = showID)
+		_entry = judge_show()
+		_entry.judgeId = _judge
+		_entry.showId = _show
+		_entry.save()
+		D = {'success':True}
+		return JsonResponse(D)
+	except Exception as ex:		
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+		}
+		return JsonResponse(D)
+
+def api_judge_search_name(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	name = request.GET['name']
+	judges = judge.objects.all().filter(name__icontains = name)
+	if(judges.exists()):			
+		D = {
+			'success':True,
+			'count':judges.count(),
+			'judges':[j for j in judges.values('id', 'name','country')]
+			}
+		return JsonResponse(D)
+	else:		
+		D = {
+			'success':False,
+			'count':0,
+			'error':'No Judge Found'
+			}
+		return JsonResponse(D)
+
+

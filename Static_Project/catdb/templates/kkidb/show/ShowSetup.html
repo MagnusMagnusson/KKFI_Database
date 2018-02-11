@@ -9,23 +9,31 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-    
-   <h2>Create old Show</h2> 
-<form id="addButton" action="POST">
-    <p>{{nom}}</p>
-    {% for field in form %}
+    <p id="showID" style="display:none;">{{show.id}}</p>
+    <h2>{{show.name}}</h2>
+<form id="addCat" action="POST">
+    <h2>Add new Cat</h2> 
+    {% for field in catAddForm %}
     <p>{{field.label_tag}}</p>{{field}}<br/>
     {% endfor %}
     {% csrf_token %}
 <input type="submit" ></input>
 </form>
+    <form id="addJudge" action="POST">
+        <h2>Add new Judge</h2>
+        {% for field in judgeAddForm %}
+        <p>{{field.label_tag}}</p>{{field}}<br />
+        {% endfor %}
+        {% csrf_token %}
+        <input type="submit"></input>
+    </form>
     <div id="message"></div>
     <div id="catList">lol</div>
 </body>
 </html>
 <script type="text/javascript">
-
     $(document).ready(function () {
+        window.Siteshow = $("#showID").text();
         var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
@@ -39,10 +47,10 @@
             }
         });
 
-        $("#addButton").submit(function (event) {
+        $("#addCat").submit(function (event) {
             event.preventDefault();
 
-            var form = document.forms[0];
+            var form = $("#addCat")[0];
             var D = {};
             var inputs = form.getElementsByTagName('input');
             for (var i = 0; i < inputs.length; i++) {
@@ -52,7 +60,11 @@
             for (var i = 0; i < inputs.length; i++) {
                 D[inputs[i].name] = inputs[i].value;
             }
-            D.cat = FORM.finalList($("input[name = 'cat']").val())[0].id;
+            D['show'] = window.Siteshow;
+            if (window.Siteshow == "") {
+                return;
+            }
+            D.cat = FORM.finalList($("input[name = 'cat']").val(),'cat')[0].id;
             $.ajax({
                 type: "POST",
                 url: "../api/shows/register/",
@@ -71,8 +83,46 @@
             return false;
         });
 
+
+        $("#addJudge").submit(function (event) {
+            event.preventDefault();
+
+            var form = $("#addJudge")[0];
+            var D = {};
+            var inputs = form.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            var inputs = form.getElementsByTagName('select');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            D['show'] = window.Siteshow;
+            if (window.Siteshow == "") {
+                return;
+            }
+            D.judge = FORM.finalList($("input[name = 'judge']").val(), 'judge')[0].id;
+            $.ajax({
+                type: "POST",
+                url: "../../api/shows/judge_register",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        $('#message').html("<h2> IT WORKED. new judge entered </h2>")
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+            return false;
+        });
+
+
         FORM = {
-            nameList: [],
+            nameList: {'cat':[],'judge':[]},
             update_message: function (arr) {
                 mess = "found " + arr.length + " cats: <ul>";
                 for (var i = 0; i < arr.length; i++) {
@@ -81,10 +131,10 @@
                 mess += "</ul>"
                 $('#catList').html("<h2> kitties: " + mess + " </h2>")
             },
-            finalList: function (x) {
+            finalList: function (x,list) {
                 x = x.toLowerCase();
                 var foundName = []
-                var _list = this.nameList
+                var _list = this.nameList[list]
                 for (var i = 0; i < _list.length; i++) {
                     if (_list[i].name.toLowerCase().indexOf(x) != -1) {
                         foundName.push(_list[i]);
@@ -97,12 +147,23 @@
         $("input[name = 'cat']").on('input', function () {
             var val = $("input[name = 'cat']").val();
             if (val.length == 3) {
-                FORM.nameList = [];
+                FORM.nameList['cat'] = [];
                 getCatNames(val, 'sire');
                 getCatNames(val, 'dam');
             }
             else {
-                FORM.update_message(FORM.finalList(val));
+                FORM.update_message(FORM.finalList(val,'cat'));
+            }
+        });
+
+        $("input[name = 'judge']").on('input', function () {
+            var val = $("input[name = 'judge']").val();
+            if (val.length == 3) {
+                FORM.nameList['judge'] = [];
+                getJudgeNames(val);
+            }
+            else {
+                FORM.update_message(FORM.finalList(val, 'judge'));
             }
         });
 
@@ -110,15 +171,15 @@
             D = { 'name': name, 'gender': type }
             $.ajax({
                 type: "GET",
-                url: "../find_cat_name/",
+                url: "../../find_cat_name/",
                 dataType: 'json',
                 data: D,
                 success: function (d) {
                     if (d.success) {
                         for(let c of d.cats) {
-                            FORM.nameList.push(c);
+                            FORM.nameList['cat'].push(c);
                         }
-                        FORM.update_message(FORM.nameList);
+                        FORM.update_message(FORM.nameList['cat']);
                     }
                     else {
                         $('#message').html("<h2> error " + d.error + " occurred</h2>")
@@ -127,5 +188,29 @@
                 }
             });
         }
+
+        function getJudgeNames(name) {
+            D = { 'name': name }
+            $.ajax({
+                type: "GET",
+                url: "../../api/judge/find_judge_name",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        for(let j of d.judges) {
+                            j.name = j.name + " [ " + j.country + " ]";
+                            FORM.nameList['judge'].push(j);
+                        }
+                        FORM.update_message(FORM.nameList['judge']);
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+        }
+
     })
 </script>

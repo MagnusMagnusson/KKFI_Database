@@ -151,11 +151,21 @@ def addshow(request):
 	return HttpResponse(template.render(context,request))
 
 
-def view_ShowRegisterEntry(request):
-	form = form_show_entry_add()
-	template = loader.get_template('kkidb/show/ShowAddEntry.html')
-	context = {
-		'form': form 
+def view_ShowSetup(request):
+	catAddForm = form_show_entry_add()
+	judgeAddForm = form_show_judge_add()
+	template = loader.get_template('kkidb/show/ShowSetup.html')
+	showId = request.GET['show']
+	shows = None
+	if(showId != None):
+		shows = show.objects.all().filter(id = showId)
+		if(len(shows) > 0):
+			shows = shows[0]
+
+	context = { 
+		'catAddForm': catAddForm,
+		'judgeAddForm': judgeAddForm,
+		'show': shows
 		}
 	return HttpResponse(template.render(context,request))
 

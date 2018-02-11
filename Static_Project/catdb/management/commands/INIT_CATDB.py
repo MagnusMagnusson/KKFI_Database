@@ -10,9 +10,49 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 
 
-class Command(BaseCommand):
+class Command(BaseCommand):    
+	
+	def add_arguments(self, parser):
+		parser.add_argument('Action', nargs='+', type=str)
 	def handle(self, *args, **options):
+
 		print("Initializing constant data")
+		act = options['Action'][0]
+		if(act == "cert" or act == "all"):
+			self.cert_fill()
+		if(act == "judge" or act == "all"):
+			self.judge_fill()
+
+	def judge_fill(self):
+		print("== STARTING JUDGE FILL ==")
+		Length = 1
+		with open('KKIDB_exports/Judges.csv', 'rb') as lengthfile:
+			lengthreader =  unicode_csv_reader(lengthfile, quotechar='"')
+			Length = sum(1 for row in lengthreader)
+			print("Length recorded as " + str(Length))
+		lengthfile.close()
+
+		with open('KKIDB_exports/Judges.csv', 'rb') as csvfile:
+			spamreader = unicode_csv_reader(csvfile, quotechar='"')
+			first = True
+			print("loaded")
+			done = 0
+			lastpercent = 0.05
+			Cprev = None
+			for row in spamreader:
+				print(row)
+				if(first):
+					first = False
+				else:
+					J = judge()
+					J.name = row[2]
+					J.country = row[4]
+					J.save()
+			print("judge import done.")
+			csvfile.close()
+
+	def cert_fill(self):
+		print("== STARTING CERTIFICATE FILL ==")
 		Length = 1
 		with open('KKIDB_exports/certificates.csv', 'rb') as lengthfile:
 			lengthreader =  unicode_csv_reader(lengthfile, quotechar='"')
@@ -39,15 +79,8 @@ class Command(BaseCommand):
 					C.neutered = int(row[2]) == 1
 					Cprev = C if (Cprev == None or C.neutered == Cprev.neutered) else None
 					C.save()
-			print("import done.")
+			print("cert import done.")
 			csvfile.close()
-
-		#		C = cat();
-		#		C.name = row[3]
-		#		C.reg_nr = row[0]
-		#		if(row[5] == 'Fress'):
-		#			C.gender = True
-		#		C.birth
 
 
 def unicode_csv_reader(unicode_csv_data, dialect=csv.excel, **kwargs):
