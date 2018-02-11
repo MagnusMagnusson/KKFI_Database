@@ -100,11 +100,11 @@ class form_add_show(forms.Form):
 	
 
 class form_show_entry_add(forms.Form):
-	show = forms.IntegerField();
 	cat = forms.CharField(
 		required = True,
 		max_length = 30
 		)
 	entry_nr = forms.IntegerField();
 
-	
+class form_show_judge_add(forms.Form):
+	judge = forms.CharField(max_length = 50)
