@@ -9,7 +9,8 @@ from catdb.models import *
 from .forms import SearchCat
 from .forms import AddCat
 import time
-import datetime
+from datetime import datetime
+from datetime import date
 
 
 def form_cat(request):
@@ -257,19 +258,23 @@ def api_entry_search_name(request):
 			}
 	name = request.GET['name']
 	show = request.GET['show']
-	entries = show_entry.objects.all().filter(catId__name__icontains = name, showId = show)
+	
+	current = datetime.now().date()
+	max_date = date(current.year - 25, current.month, current.day)
+
+	entries = show_entry.objects.all().filter(catId__name__icontains = name, showId = show).exclude(catId__birth__lte = max_date)
 
 	if(entries.exists()):	
 		entr = []
 		for e in entries:
 			entr.append({
 				'name':e.catId.name,
-				'id':e.catId_id
+				'id':e.cat_show_number
 				})		
 		D = {
 			'success':True,
 			'count':entries.count(),
-			'judges': entr
+			'kitties': entr
 			}
 		return JsonResponse(D)
 	else:		

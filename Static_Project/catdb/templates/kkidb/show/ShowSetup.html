@@ -173,8 +173,7 @@
                 data: D,
                 success: function (d) {
                     if (d.success) {
-                        for(let j of d.judges) {
-                            j.name = j.name + " [ " + j.country + " ]";
+                        for(let j of d.kitties) {
                             FORM.nameList['litter'].push(j);
                         }
                         FORM.update_message(FORM.nameList['litter']);
@@ -289,7 +288,7 @@
             data: D,
             success: function (d) {
                 if (d.success) {
-                    $('#message').html("<h2> IT WORKED. new judge entered </h2>")
+                    $('#message').html("<h2> IT WORKED. Cat now part of a litter </h2>")
                 }
                 else {
                     $('#message').html("<h2> error " + d.error + " occurred</h2>")
