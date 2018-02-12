@@ -226,6 +226,40 @@ def api_show_judge_register(request):
 		}
 		return JsonResponse(D)
 
+def api_show_litter_entry_register(request):
+	if not request.is_ajax():
+			D = {
+				'success':False,
+				'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+				}
+			return JsonResponse(D)
+	try:
+		post =  request.POST
+		entryId = post['littercat']
+		letterId = post['litterletter']
+		_entry = None
+		try:
+			_entry = show_entry.objects.get(catId = int(entryId))
+		except Exception as ex:
+			D = {
+			'success':False,
+			'message':"No entry with that ID exists"
+			}
+		return JsonResponse(D)
+		_litter = litter()
+		_litter.catId = _entry
+		_litter.letterId = letterId
+		_litter.save()
+		D = {'success':True}
+		return JsonResponse(D)
+	except Exception as ex:		
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+		}
+		return JsonResponse(D)
+
 def api_judge_search_name(request):
 	if not request.is_ajax():
 		D = {
@@ -248,7 +282,6 @@ def api_judge_search_name(request):
 			'error':'No Judge Found'
 			}
 		return JsonResponse(D)
-
 	
 def api_entry_search_name(request):
 	if not request.is_ajax():

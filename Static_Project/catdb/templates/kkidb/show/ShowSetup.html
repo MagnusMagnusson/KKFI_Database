@@ -276,14 +276,13 @@
         for (var i = 0; i < inputs.length; i++) {
             D[inputs[i].name] = inputs[i].value;
         }
-        D['show'] = window.Siteshow;
         if (window.Siteshow == "") {
             return;
         }
-        D.entry = FORM.finalList($("input[name = 'judge']").val(), 'judge')[0].id;
+        D.littercat = FORM.finalList($("input[name = 'litterCat']").val(), 'entry')[0].id;
         $.ajax({
             type: "POST",
-            url: "../../api/shows/judge_register",
+            url: "../../api/shows/litter_register/",
             dataType: 'json',
             data: D,
             success: function (d) {
