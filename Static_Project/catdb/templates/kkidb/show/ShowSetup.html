@@ -211,7 +211,7 @@
         D.cat = FORM.finalList($("input[name = 'cat']").val(), 'cat')[0].id;
         $.ajax({
             type: "POST",
-            url: "../api/shows/register/",
+            url: "../../api/shows/register/",
             dataType: 'json',
             data: D,
             success: function (d) {
@@ -279,7 +279,7 @@
         if (window.Siteshow == "") {
             return;
         }
-        D.littercat = FORM.finalList($("input[name = 'litterCat']").val(), 'entry')[0].id;
+        D.litterCat = FORM.finalList($("input[name = 'litterCat']").val(), 'litter')[0].id;
         $.ajax({
             type: "POST",
             url: "../../api/shows/litter_register/",

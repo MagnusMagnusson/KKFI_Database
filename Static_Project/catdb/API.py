@@ -150,7 +150,7 @@ def api_create_show(request):
 		day = int(post['date_day'])
 		month = int(post['date_month'])
 		year = int(post['date_year'])
-		S.date = datetime.date(year, month, day)
+		S.date = date(year, month, day)
 
 		S.save()
 		D = {
@@ -235,17 +235,18 @@ def api_show_litter_entry_register(request):
 			return JsonResponse(D)
 	try:
 		post =  request.POST
-		entryId = post['littercat']
-		letterId = post['litterletter']
+		entryId = post['litterCat']
+		letterId = post['litterLetter']
 		_entry = None
 		try:
-			_entry = show_entry.objects.get(catId = int(entryId))
+			_entry = show_entry.objects.get(id = entryId)
 		except Exception as ex:
 			D = {
 			'success':False,
-			'message':"No entry with that ID exists"
+			'error':type(ex).__name__,
+			'message':"inner " + str(ex)
 			}
-		return JsonResponse(D)
+			return JsonResponse(D)
 		_litter = litter()
 		_litter.catId = _entry
 		_litter.letterId = letterId
@@ -256,7 +257,7 @@ def api_show_litter_entry_register(request):
 		D = {
 			'success':False,
 			'error':type(ex).__name__,
-			'message':str(ex)
+			'message':"outer " + str(ex)
 		}
 		return JsonResponse(D)
 
