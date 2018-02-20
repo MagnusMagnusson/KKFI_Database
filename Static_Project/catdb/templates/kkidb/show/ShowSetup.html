@@ -11,6 +11,7 @@
 <body>
     <p id="showID" style="display:none;">{{show.id}}</p>
     <h2>{{show.name}}</h2>
+
 <form id="addCat" action="POST">
     <h2>Add new Cat</h2> 
     {% for field in catAddForm %}
@@ -19,18 +20,31 @@
     {% csrf_token %}
 <input type="submit" ></input>
 </form>
-    <form id="addJudge" action="POST">
-        <h2>Add new Judge</h2>
-        {% for field in judgeAddForm %}
-        <p>{{field.label_tag}}</p>{{field}}<br />
-        {% endfor %}
-        {% csrf_token %}
-        <input type="submit"></input>
-    </form>
+
+<form id="addJudge" action="POST">
+    <h2>Add new Judge</h2>
+    {% for field in judgeAddForm %}
+    <p>{{field.label_tag}}</p>{{field}}<br />
+    {% endfor %}
+    {% csrf_token %}
+    <input type="submit"></input>
+</form>
+
+
+<form id="addLitter" action="POST">
+    <h2>Add new Litter entry</h2>
+    {% for field in litterAddForm %}
+    <p>{{field.label_tag}}</p>{{field}}<br />
+    {% endfor %}
+    {% csrf_token %}
+    <input type="submit"></input>
+</form>
+
     <div id="message"></div>
     <div id="catList">lol</div>
 </body>
 </html>
+
 <script type="text/javascript">
     $(document).ready(function () {
         window.Siteshow = $("#showID").text();
@@ -47,82 +61,9 @@
             }
         });
 
-        $("#addCat").submit(function (event) {
-            event.preventDefault();
-
-            var form = $("#addCat")[0];
-            var D = {};
-            var inputs = form.getElementsByTagName('input');
-            for (var i = 0; i < inputs.length; i++) {
-                D[inputs[i].name] = inputs[i].value;
-            }
-            var inputs = form.getElementsByTagName('select');
-            for (var i = 0; i < inputs.length; i++) {
-                D[inputs[i].name] = inputs[i].value;
-            }
-            D['show'] = window.Siteshow;
-            if (window.Siteshow == "") {
-                return;
-            }
-            D.cat = FORM.finalList($("input[name = 'cat']").val(),'cat')[0].id;
-            $.ajax({
-                type: "POST",
-                url: "../api/shows/register/",
-                dataType: 'json',
-                data: D,
-                success: function (d) {
-                    if (d.success) {
-                        $('#message').html("<h2> IT WORKED. New show at " + d.id + " </h2>")
-                    }
-                    else {
-                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                    }
-
-                }
-            });
-            return false;
-        });
-
-
-        $("#addJudge").submit(function (event) {
-            event.preventDefault();
-
-            var form = $("#addJudge")[0];
-            var D = {};
-            var inputs = form.getElementsByTagName('input');
-            for (var i = 0; i < inputs.length; i++) {
-                D[inputs[i].name] = inputs[i].value;
-            }
-            var inputs = form.getElementsByTagName('select');
-            for (var i = 0; i < inputs.length; i++) {
-                D[inputs[i].name] = inputs[i].value;
-            }
-            D['show'] = window.Siteshow;
-            if (window.Siteshow == "") {
-                return;
-            }
-            D.judge = FORM.finalList($("input[name = 'judge']").val(), 'judge')[0].id;
-            $.ajax({
-                type: "POST",
-                url: "../../api/shows/judge_register",
-                dataType: 'json',
-                data: D,
-                success: function (d) {
-                    if (d.success) {
-                        $('#message').html("<h2> IT WORKED. new judge entered </h2>")
-                    }
-                    else {
-                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                    }
-
-                }
-            });
-            return false;
-        });
-
 
         FORM = {
-            nameList: {'cat':[],'judge':[]},
+            nameList: { 'cat': [], 'judge': [], 'litter': [] },
             update_message: function (arr) {
                 mess = "found " + arr.length + " cats: <ul>";
                 for (var i = 0; i < arr.length; i++) {
@@ -143,7 +84,8 @@
                 return foundName;
             }
         };
-
+        
+        // Cat entry change stuff
         $("input[name = 'cat']").on('input', function () {
             var val = $("input[name = 'cat']").val();
             if (val.length == 3) {
@@ -155,7 +97,7 @@
                 FORM.update_message(FORM.finalList(val,'cat'));
             }
         });
-
+        // Judge entry change stuff
         $("input[name = 'judge']").on('input', function () {
             var val = $("input[name = 'judge']").val();
             if (val.length == 3) {
@@ -166,7 +108,17 @@
                 FORM.update_message(FORM.finalList(val, 'judge'));
             }
         });
-
+        // Litter entry change stuff
+        $("input[name = 'litterCat']").on('input', function () {
+            var val = $("input[name = 'litterCat']").val();
+            if (val.length == 3) {
+                FORM.nameList['litter'] = [];
+                getEntryNames(val);
+            }
+            else {
+                FORM.update_message(FORM.finalList(val, 'litter'));
+            }
+        });
         function getCatNames(name, type) {
             D = { 'name': name, 'gender': type }
             $.ajax({
@@ -212,5 +164,137 @@
             });
         }
 
+        function getEntryNames(name) {
+            D = { 'name': name, 'show' : Siteshow }
+            $.ajax({
+                type: "GET",
+                url: "../../api/shows/find_entry_name",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        for(let j of d.kitties) {
+                            FORM.nameList['litter'].push(j);
+                        }
+                        FORM.update_message(FORM.nameList['litter']);
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+        }
+
     })
+</script>
+
+<script>
+    //Submit scripts
+    $("#addCat").submit(function (event) {
+        event.preventDefault();
+
+        var form = $("#addCat")[0];
+        var D = {};
+        var inputs = form.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        var inputs = form.getElementsByTagName('select');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        D['show'] = window.Siteshow;
+        if (window.Siteshow == "") {
+            return;
+        }
+        D.cat = FORM.finalList($("input[name = 'cat']").val(), 'cat')[0].id;
+        $.ajax({
+            type: "POST",
+            url: "../../api/shows/register/",
+            dataType: 'json',
+            data: D,
+            success: function (d) {
+                if (d.success) {
+                    $('#message').html("<h2> IT WORKED. New show at " + d.id + " </h2>")
+                }
+                else {
+                    $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                }
+
+            }
+        });
+        return false;
+    });
+
+    $("#addJudge").submit(function (event) {
+        event.preventDefault();
+
+        var form = $("#addJudge")[0];
+        var D = {};
+        var inputs = form.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        var inputs = form.getElementsByTagName('select');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        D['show'] = window.Siteshow;
+        if (window.Siteshow == "") {
+            return;
+        }
+        D.judge = FORM.finalList($("input[name = 'judge']").val(), 'judge')[0].id;
+        $.ajax({
+            type: "POST",
+            url: "../../api/shows/judge_register",
+            dataType: 'json',
+            data: D,
+            success: function (d) {
+                if (d.success) {
+                    $('#message').html("<h2> IT WORKED. new judge entered </h2>")
+                }
+                else {
+                    $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                }
+
+            }
+        });
+        return false;
+    });
+
+    $("#addLitter").submit(function (event) {
+        event.preventDefault();
+
+        var form = $("#addLitter")[0];
+        var D = {};
+        var inputs = form.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        var inputs = form.getElementsByTagName('select');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        if (window.Siteshow == "") {
+            return;
+        }
+        D.litterCat = FORM.finalList($("input[name = 'litterCat']").val(), 'litter')[0].id;
+        $.ajax({
+            type: "POST",
+            url: "../../api/shows/litter_register/",
+            dataType: 'json',
+            data: D,
+            success: function (d) {
+                if (d.success) {
+                    $('#message').html("<h2> IT WORKED. Cat now part of a litter </h2>")
+                }
+                else {
+                    $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                }
+
+            }
+        });
+        return false;
+    });
 </script>

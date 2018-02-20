@@ -154,6 +154,7 @@ def addshow(request):
 def view_ShowSetup(request):
 	catAddForm = form_show_entry_add()
 	judgeAddForm = form_show_judge_add()
+	litterAddForm = form_show_litter_add()
 	template = loader.get_template('kkidb/show/ShowSetup.html')
 	showId = request.GET['show']
 	shows = None
@@ -165,6 +166,7 @@ def view_ShowSetup(request):
 	context = { 
 		'catAddForm': catAddForm,
 		'judgeAddForm': judgeAddForm,
+		'litterAddForm': litterAddForm,
 		'show': shows
 		}
 	return HttpResponse(template.render(context,request))

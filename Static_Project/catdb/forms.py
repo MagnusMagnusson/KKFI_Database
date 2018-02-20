@@ -108,3 +108,13 @@ class form_show_entry_add(forms.Form):
 
 class form_show_judge_add(forms.Form):
 	judge = forms.CharField(max_length = 50)
+
+class form_show_litter_add(forms.Form):
+		litterCat = forms.CharField(
+		required = True,
+		max_length = 50
+		)
+		litterLetter = forms.CharField(
+		required = True,
+		max_length = 2
+		)

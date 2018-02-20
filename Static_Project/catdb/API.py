@@ -9,7 +9,8 @@ from catdb.models import *
 from .forms import SearchCat
 from .forms import AddCat
 import time
-import datetime
+from datetime import datetime
+from datetime import date
 
 
 def form_cat(request):
@@ -149,7 +150,7 @@ def api_create_show(request):
 		day = int(post['date_day'])
 		month = int(post['date_month'])
 		year = int(post['date_year'])
-		S.date = datetime.date(year, month, day)
+		S.date = date(year, month, day)
 
 		S.save()
 		D = {
@@ -225,6 +226,41 @@ def api_show_judge_register(request):
 		}
 		return JsonResponse(D)
 
+def api_show_litter_entry_register(request):
+	if not request.is_ajax():
+			D = {
+				'success':False,
+				'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+				}
+			return JsonResponse(D)
+	try:
+		post =  request.POST
+		entryId = post['litterCat']
+		letterId = post['litterLetter']
+		_entry = None
+		try:
+			_entry = show_entry.objects.get(id = entryId)
+		except Exception as ex:
+			D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':"inner " + str(ex)
+			}
+			return JsonResponse(D)
+		_litter = litter()
+		_litter.catId = _entry
+		_litter.letterId = letterId
+		_litter.save()
+		D = {'success':True}
+		return JsonResponse(D)
+	except Exception as ex:		
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':"outer " + str(ex)
+		}
+		return JsonResponse(D)
+
 def api_judge_search_name(request):
 	if not request.is_ajax():
 		D = {
@@ -238,6 +274,41 @@ def api_judge_search_name(request):
 			'success':True,
 			'count':judges.count(),
 			'judges':[j for j in judges.values('id', 'name','country')]
+			}
+		return JsonResponse(D)
+	else:		
+		D = {
+			'success':False,
+			'count':0,
+			'error':'No Judge Found'
+			}
+		return JsonResponse(D)
+	
+def api_entry_search_name(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	name = request.GET['name']
+	show = request.GET['show']
+	
+	current = datetime.now().date()
+	max_date = date(current.year - 25, current.month, current.day)
+
+	entries = show_entry.objects.all().filter(catId__name__icontains = name, showId = show).exclude(catId__birth__lte = max_date)
+
+	if(entries.exists()):	
+		entr = []
+		for e in entries:
+			entr.append({
+				'name':e.catId.name,
+				'id':e.cat_show_number
+				})		
+		D = {
+			'success':True,
+			'count':entries.count(),
+			'kitties': entr
 			}
 		return JsonResponse(D)
 	else:		
