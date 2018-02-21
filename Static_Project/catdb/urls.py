@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^addcat/.*', views.addcat, name='addcat'),
     url(r'^shows/new', views.addshow, name='addshow'),
     url(r'^shows/setup.*', views.view_ShowSetup, name='view_ShowSetup'),
+    url(r'^shows/manage.*', views.view_ShowManage, name='view_ShowManage'),
     url(r'^shows/.*', views.findshow, name='findshow'),
 
 	#JSON REQUESTS

@@ -171,6 +171,24 @@ def view_ShowSetup(request):
 		}
 	return HttpResponse(template.render(context,request))
 
+def view_ShowManage(request):
+	template = loader.get_template('kkidb/show/ManageShow.html')
+	showId = request.GET['show']
+	judgementAddForm = form_show_judgement_enter(show_id = showId)
+	colorAddForm = form_show_color_judgement_enter()
+	shows = None
+	if(showId != None):
+		shows = show.objects.all().filter(id = showId)
+		if(len(shows) > 0):
+			shows = shows[0]
+
+	context = { 
+		'show': shows,
+		'judgementAddForm' : judgementAddForm,
+		'colorAddForm' : colorAddForm
+		}
+	return HttpResponse(template.render(context,request))
+
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')
 	context = {}
