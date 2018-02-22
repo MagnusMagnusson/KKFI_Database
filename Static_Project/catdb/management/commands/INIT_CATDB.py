@@ -67,17 +67,27 @@ class Command(BaseCommand):
 			done = 0
 			lastpercent = 0.05
 			Cprev = None
+			titleDict = {}
 			for row in spamreader:
-				print(row)
 				if(first):
 					first = False
 				else:
+					if(row[4] != ''):
+						T = titles()
+						T.id = int(row[4])
+						T.name = row[5]
+						T.desc = row[6]
+						T.neutered = int(row[7]) == 1
+						T.save()
+						titleDict[T.id] = T					
+					
 					C = cert()
 					C.certName = row[0]
-					C.certRank = row[1]
-					C.predecessor = Cprev
+					C.certRank = row[1]					
 					C.neutered = int(row[2]) == 1
-					Cprev = C if (Cprev == None or C.neutered == Cprev.neutered) else None
+					C.predecessor = Cprev if (Cprev != None and C.neutered == Cprev.neutered) else None
+					Cprev = C
+					C.title = titleDict[int(row[3])] if (int(row[3]) > 0)  else None
 					C.save()
 			print("cert import done.")
 			csvfile.close()

@@ -8,9 +8,12 @@ from django.utils import timezone
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from datetime import date
+from django.db import transaction
 
 
 class Command(BaseCommand):
+	@transaction.atomic
 	def handle(self, *args, **options):
 		print("started better")
 		Length = 1
@@ -64,9 +67,49 @@ class Command(BaseCommand):
 							mommy_clause = parents.objects.get(cat = mommy)
 							C.dam = mommy_clause
 						except ObjectDoesNotExist:
-							C.dam = None
-
+							C.dam = None					
 					C.save()
+					try:
+						Point = cert.objects.get(certName = "CAC",certRank = 1)
+					except: 
+						print("AEWAEDEWDAWDA")
+					for i in range(38,63):
+						row[i] = int(row[i])
+						if(row[i] == 0):
+							break
+						
+						givenPoint = cert_judgement()
+						givenPoint.cat = C
+						givenPoint.judgement = None
+						givenPoint.cert = Point
+						givenPoint.date = date.today()
+						givenPoint.save()					
+						try:
+							Point = cert.objects.get(predecessor = Point)
+						except cert.DoesNotExist:
+							print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
+							break;
+						
+					try:
+						Point = cert.objects.get(certName = "CAP",certRank = 1)
+					except:
+						contineu
+					for i in range(63,88):
+						row[i] = int(row[i])
+						if(row[i] == 0):
+							break
+						
+						givenPoint = cert_judgement()
+						givenPoint.cat = C
+						givenPoint.judgement = None
+						givenPoint.cert = Point
+						givenPoint.date = date.today()
+						givenPoint.save()
+						try:
+							Point = cert.objects.get(predecessor = Point)
+						except cert.DoesNotExist:
+							break;
+
 					P = parents()
 					P.is_ghost = False
 					P.cat = C

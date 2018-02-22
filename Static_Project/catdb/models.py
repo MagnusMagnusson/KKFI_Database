@@ -151,6 +151,7 @@ class cert(models.Model):
 	certRank =  models.IntegerField(null = False)
 	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT,null = True)
 	neutered = models.BooleanField()
+	title = models.ForeignKey('titles',on_delete = models.PROTECT,null = True)
 
 class judgementLitter(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -164,9 +165,9 @@ class judgementLitter(models.Model):
 class cert_judgement(models.Model):
 	id = models.AutoField(primary_key = True)
 	cat = models.ForeignKey('cat',on_delete = models.PROTECT)
-	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT)
+	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT, null = True)
 	cert = models.ForeignKey('cert',on_delete = models.PROTECT) 
-	date = models.DateField(null = False)
+	date = models.DateField(null = True)
 
 class reward(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -176,3 +177,9 @@ class reward(models.Model):
 class judgement_reward(models.Model):
 	award = models.ForeignKey('reward',on_delete = models.PROTECT)
 	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT)
+
+class titles(models.Model):
+	id = models.IntegerField(primary_key = True)
+	name = models.CharField(max_length = 3)
+	desc = models.CharField(max_length = 50)
+	neutered = models.BooleanField() 
