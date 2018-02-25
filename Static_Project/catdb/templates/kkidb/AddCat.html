@@ -77,14 +77,14 @@
             }
             var parent_value = FORM.finalList($("input[name = 'sire']").val(), 'sire');
             if (parent_value.length == 1) {
-                D['sire'] = [0].id;
+                D['sire'] = parent_value[0].id;
             }
             else {
                 D['sire'] = null;
             }
             parent_value = FORM.finalList($("input[name = 'dam']").val(), 'dam');
             if (parent_value.length == 1) {
-                D['dam'] = [0].id;
+                D['dam'] = parent_value[0].id;
             }
             else {
                 D['dam'] = null;

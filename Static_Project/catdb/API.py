@@ -42,12 +42,12 @@ def form_cat(request):
 		reg_day = int(post['registered_day'])
 		reg_month = int(post['registered_month'])
 		reg_year = int(post['registered_year'])
-		C.registered = datetime.date(reg_year, reg_month, reg_day)
+		C.registered = date(reg_year, reg_month, reg_day)
 
 		b_day = int(post['birth_day'])
 		b_month = int(post['birth_month'])
 		b_year = int(post['birth_year'])
-		C.birth = datetime.date(b_year, b_month, b_day)
+		C.birth = date(b_year, b_month, b_day)
 		if(sire):
 			Sire = cat.objects.filter(id = sire)
 			if(Sire.exists()):
@@ -376,9 +376,9 @@ def api_show_enter_judgement(request):
 		_judgement.ex =  request.POST['ex'] == "true"
 		_judgement.cert =  request.POST['cert'] == "true"
 		_judgement.biv =  request.POST['biv'] == "true"
-		_judgement.nom =  request.POST['biv'] == "true"
+		_judgement.nom =  request.POST['nom'] == "true"
 		_judgement.comment = request.POST['comment']
-		_newTitle = C['nextCert'].title.name if ( _judgement.cert and  C['nextCert'].title != C['nextCert'].predecessor.title) else None
+		_newTitle = C['nextCert'].title.name if ( _judgement.cert and  C['nextCert'] and C['nextCert'].predecessor and C['nextCert'].title != C['nextCert'].predecessor.title) else None
 		_ems = cat_EMS.objects.filter(cat_id = _cat.id)
 		if(len(_ems) > 0):
 			_ems = _ems.latest('reg_date')
@@ -440,4 +440,3 @@ def api_show_enter_litter_judgement(request):
 			}
 	return JsonResponse(D)
 
-api_show_enter_litter_judgement

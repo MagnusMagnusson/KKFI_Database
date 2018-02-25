@@ -68,13 +68,14 @@ class Command(BaseCommand):
 							C.dam = mommy_clause
 						except ObjectDoesNotExist:
 							C.dam = None	
-
+					C.save()
 					if(int(row[22]) != 0):
 						N = neutered()
 						N.catId = C 
 						if(len(row[21]) > 5):
 							N.date = datetime.strptime(row[21], '%d.%m.%Y %H:%M:%S')
-					C.save()
+						N.save()
+					
 					try:
 						Point = cert.objects.get(certName = "CAC",certRank = 1)
 					except: 

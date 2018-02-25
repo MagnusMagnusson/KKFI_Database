@@ -1,5 +1,7 @@
 ﻿from catdb.models import *
-
+from django.db import transaction
+from datetime import datetime
+from datetime import date
 
 class CatDbHelper():
 	#input(Entry number, SHow number)
@@ -41,3 +43,50 @@ class CatDbHelper():
 			D['success'] = True
 			return D
 
+			
+	@staticmethod
+	@transaction.atomic
+	def getNominations(showId):
+		D = {}
+		_show = show.objects.get(id = showId) 		
+		_allCats = judgement.objects.filter(showId = _show, nom = True)
+
+		#Litters
+		litterNoms = judgementLitter.objects.filter(nom = True,showId = _show)
+		D['litters'] = litterNoms
+
+		#Kittens
+		min_date = monthdelta(datetime.now().date(),-7)
+		_kittenCats = _allCats.filter(entryId__catId__birth__gte = min_date)
+		D['Kittens'] = _kittenCats
+
+		#Younglings
+		min_date = monthdelta(datetime.now().date(),-10)
+		max_date = monthdelta(datetime.now().date(),-7)
+		_youngCats = _allCats.filter(entryId__catId__birth__gt = min_date, entryId__catId__birth__lte = max_date)
+		D['Younglings'] = _youngCats
+
+		# adults
+		max_date = monthdelta(datetime.now().date(),-10)
+		_adults = _allCats.exclude(entryId__catId__birth__gt = max_date)
+		_neutered = _adults.filter(entryId__catId__neutered__isnull=False)
+		_nonNeutered = _adults.exclude(entryId__catId__neutered__isnull=False)
+		_neuterMale = _neutered.filter(entryId__catId__gender = False)
+		_neuterFemale = _neutered.filter(entryId__catId__gender = True)
+		_NonneuterMale = _nonNeutered.filter(entryId__catId__gender = False)
+		_NonneuterFemale = _nonNeutered.filter(entryId__catId__gender = True)
+
+		D['Males'] = _NonneuterMale
+		D['Females'] = _NonneuterFemale
+		D['nMales'] = _neuterMale
+		D['nFemales'] = _neuterFemale
+
+		return D
+
+
+def monthdelta(date, delta):
+	m, y = (date.month+delta) % 12, date.year + ((date.month)+delta-1) // 12
+	if not m: m = 12
+	d = min(date.day, [31,
+		29 if y%4==0 and not y%400==0 else 28,31,30,31,30,31,31,30,31,30,31][m-1])
+	return date.replace(day=d,month=m, year=y)

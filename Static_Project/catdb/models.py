@@ -86,7 +86,7 @@ class cat_EMS(models.Model):
 	
 class neutered(models.Model):
 	catId = models.OneToOneField('cat')
-	date = models.DateField()
+	date = models.DateField(null = True)
 	
 class microchip(models.Model):
 	id = models.AutoField(primary_key = True)

@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^shows/new', views.addshow, name='addshow'),
     url(r'^shows/setup.*', views.view_ShowSetup, name='view_ShowSetup'),
     url(r'^shows/manage.*', views.view_ShowManage, name='view_ShowManage'),
+    url(r'^shows/nominations/view.*', views.view_ShowNominations, name='view_ShowNominations'),
+    url(r'^shows/nominations/cvs.*', views.view_ShowNominations, name='view_ShowNominations'),
     url(r'^shows/.*', views.findshow, name='findshow'),
 
 	#JSON REQUESTS

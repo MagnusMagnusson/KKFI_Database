@@ -7,10 +7,11 @@ from django.http import JsonResponse
 from django.template import loader
 from django.utils.encoding import *
 from catdb.models import *
-from .forms import *
+from forms import *
 import time
 import datetime
-from API import *
+from API import *	
+import csv
 
 
 # Create your views here.
@@ -190,6 +191,37 @@ def view_ShowManage(request):
 		'litterJudgement' : litterJudgement
 		}
 	return HttpResponse(template.render(context,request))
+
+
+def view_ShowNominations(request):
+
+    # Create the HttpResponse object with the appropriate CSV header.
+	D = CatDbHelper.getNominations(int(request.GET['show']))
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="TestingFile.csv"'
+
+	writer = csv.writer(response)
+	writer.writerow(['Entry Number', 'Judge'])
+	writer.writerow(['Younglings'])
+	for x in D['Younglings']:
+		writer.writerow([x.entryId_id,x.judge_id])
+	writer.writerow(['Kitten'])
+	for x in D['Kittens']:
+		writer.writerow([x.entryId_id,x.judge_id])
+	writer.writerow(['Male'])
+	for x in D['Males']:
+		writer.writerow([x.entryId_id,x.judge_id])
+	writer.writerow(['Female'])
+	for x in D['Females']:
+		writer.writerow([x.entryId_id,x.judge_id])
+	writer.writerow(['Neutered Males'])
+	for x in D['nMales']:
+		writer.writerow([x.entryId_id,x.judge_id])
+	writer.writerow(['Neutered Females'])
+	for x in D['nFemales']:
+		writer.writerow([x.entryId_id,x.judge_id])
+
+	return response
 
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')
