@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^addcat/.*', views.addcat, name='addcat'),
     url(r'^shows/new', views.addshow, name='addshow'),
     url(r'^shows/setup.*', views.view_ShowSetup, name='view_ShowSetup'),
+    url(r'^shows/manage.*', views.view_ShowManage, name='view_ShowManage'),
     url(r'^shows/.*', views.findshow, name='findshow'),
 
 	#JSON REQUESTS
@@ -19,6 +20,8 @@ urlpatterns = [
 	url(r'^api/shows/find_entry_name/*', views.api_entry_search_name, name='api_entry_search_name'),
 	url(r'^api/shows/litter_register/*', views.api_show_litter_entry_register, name='api_show_litter_entry_register'),
 	url(r'^api/shows/judge_register', views.api_show_judge_register, name='api_show_judge_register'),
+	url(r'^api/shows/getEntryInfo', views.api_entry_get_info, name='api_entry_get_info'),
+	url(r'^api/shows/enterJudgement', views.api_show_enter_judgement, name='api_show_enter_judgement'),
 	url(r'^api/judge/find_judge_name', views.api_judge_search_name, name='api_judge_search_name'),
 	url(r'^form_cat/', views.form_cat, name='form_cat'),
 	url(r'^find_cat_name/', views.find_cat_names, name='find_cat_names'),

@@ -1,4 +1,5 @@
 from django import forms 
+from catdb.models import judge
 import datetime
 from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import extras
@@ -118,3 +119,60 @@ class form_show_litter_add(forms.Form):
 		required = True,
 		max_length = 2
 		)
+
+class form_show_judgement_enter(forms.Form):
+	def __init__(self,*args,**kwargs):
+		self.show_id = kwargs.pop('show_id')
+		super(form_show_judgement_enter,self).__init__(*args,**kwargs)
+		self.fields['judge'].queryset = judge.objects.filter(judge_show__showId = self.show_id)
+
+
+	entryCatId = forms.CharField(
+		required = True,
+		max_length = 50
+		)		
+
+	CatId = forms.CharField(
+		max_length = 50,
+		label="",
+		widget=forms.HiddenInput()
+		)	
+
+	entryCatName = forms.CharField(
+		disabled = True,
+		max_length = 50
+		)
+	color = forms.CharField(
+		disabled = True,
+		max_length = 10)
+	neutered = forms.BooleanField(disabled = True)
+	current_point  = forms.CharField(
+		disabled = True,
+		max_length = 10)
+	next_point  = forms.CharField(
+		disabled = True,
+		max_length = 10)
+	judge = forms.ModelChoiceField(queryset=None)
+	abs = forms.BooleanField(initial = False, required = False)
+	ex = forms.BooleanField(initial = False, required = False)
+	cert = forms.BooleanField(initial = False,  required = False)
+	biv = forms.BooleanField(initial = False,  required = False)
+	comment = forms.CharField(max_length = 2048,required = False)
+
+	
+class form_show_color_judgement_enter(forms.Form):
+	entryCatId = forms.CharField(
+		required = True,
+		max_length = 50
+		)		
+		
+	entryCatName = forms.CharField(
+		disabled = True,
+		max_length = 50
+		)
+	color = forms.CharField(
+		disabled = True,
+		max_length = 10)
+	neutered = forms.BooleanField(disabled = True)
+	new_EMS = forms.CharField(
+		max_length = 10)
