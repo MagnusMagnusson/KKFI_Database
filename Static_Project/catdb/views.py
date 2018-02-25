@@ -176,6 +176,7 @@ def view_ShowManage(request):
 	showId = request.GET['show']
 	judgementAddForm = form_show_judgement_enter(show_id = showId)
 	colorAddForm = form_show_color_judgement_enter()
+	litterJudgement = form_show_judgement_litter_enter(show_id = showId)
 	shows = None
 	if(showId != None):
 		shows = show.objects.all().filter(id = showId)
@@ -185,7 +186,8 @@ def view_ShowManage(request):
 	context = { 
 		'show': shows,
 		'judgementAddForm' : judgementAddForm,
-		'colorAddForm' : colorAddForm
+		'colorAddForm' : colorAddForm,
+		'litterJudgement' : litterJudgement
 		}
 	return HttpResponse(template.render(context,request))
 
