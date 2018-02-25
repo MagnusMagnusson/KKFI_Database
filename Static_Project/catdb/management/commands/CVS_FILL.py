@@ -67,12 +67,18 @@ class Command(BaseCommand):
 							mommy_clause = parents.objects.get(cat = mommy)
 							C.dam = mommy_clause
 						except ObjectDoesNotExist:
-							C.dam = None					
+							C.dam = None	
+
+					if(int(row[22]) != 0):
+						N = neutered()
+						N.catId = C 
+						if(len(row[21]) > 5):
+							N.date = datetime.strptime(row[21], '%d.%m.%Y %H:%M:%S')
 					C.save()
 					try:
 						Point = cert.objects.get(certName = "CAC",certRank = 1)
 					except: 
-						print("AEWAEDEWDAWDA")
+						print("Master detected")
 					for i in range(38,63):
 						row[i] = int(row[i])
 						if(row[i] == 0):
@@ -87,7 +93,7 @@ class Command(BaseCommand):
 						try:
 							Point = cert.objects.get(predecessor = Point)
 						except cert.DoesNotExist:
-							print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
+							print("Master detected")
 							break;
 						
 					try:

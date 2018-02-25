@@ -11,6 +11,7 @@ from .forms import AddCat
 import time
 from datetime import datetime
 from datetime import date
+from DatabaseHelpers import CatDbHelper
 
 
 def form_cat(request):
@@ -319,4 +320,26 @@ def api_entry_search_name(request):
 			}
 		return JsonResponse(D)
 
-
+def api_entry_get_info(request):	
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	try:
+		entryNum = request.GET['entry']
+		showNum = request.GET['show']
+		D = CatDbHelper.getEntryInfo(entryNum,showNum)
+		if(D['cert']):
+			D['cert'] = D['cert'].cert.certName + str(D['cert'].cert.certRank)
+		if(D['Ncert']):
+			D['Ncert'] = D['Ncert'].cert.certName + str(D['Ncert'].cert.certRank)
+		if(D['nextCert']):
+			D['nextCert'] = D['nextCert'].certName + str(D['nextCert'].certRank)
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)

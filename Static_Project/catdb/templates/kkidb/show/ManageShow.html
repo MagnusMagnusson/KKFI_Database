@@ -109,6 +109,11 @@
                 FORM.update_message(FORM.finalList(val, 'litter'));
             }
         });
+
+        $("#id_entryCatId").on('input', function () {
+            var val = $("#id_entryCatId").val();
+            getEntryInfo(val);
+        }); 
         function getCatNames(name, type) {
             D = { 'name': name, 'gender': type }
             $.ajax({
@@ -176,6 +181,28 @@
             });
         }
 
+        function getEntryInfo(ID) {
+            D = { 'entry': ID, 'show': Siteshow }
+            $.ajax({
+                type: "GET",
+                url: "../../api/shows/getEntryInfo",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        $("#id_entryCatName").val(d['name']);
+                        $("#id_color").val(d['emd']);
+                        $("#id_neutered")[0].checked = d['neutered'];
+                        $("#id_current_point").val(d['neutered'] ? d['Ncert'] : d['cert']);
+                        $("#id_next_point").val(d['nextCert']);
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+        }
     })
 </script>
 
