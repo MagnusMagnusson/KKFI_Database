@@ -158,6 +158,7 @@ class form_show_judgement_enter(forms.Form):
 	ex = forms.BooleanField(initial = False, required = False)
 	cert = forms.BooleanField(initial = False,  required = False)
 	biv = forms.BooleanField(initial = False,  required = False)
+	nom = forms.BooleanField(initial = False,  required = False)
 	comment = forms.CharField(max_length = 2048,required = False)
 
 	
@@ -193,5 +194,6 @@ class form_show_judgement_litter_enter(forms.Form):
 	judge = forms.ModelChoiceField(queryset=None)
 	litter = forms.ChoiceField(choices=[])
 	abs = forms.BooleanField(initial = False, required = False)
+	nom = forms.BooleanField(initial = False, required = False)
 	rank = forms.IntegerField()
 	comment = forms.CharField(max_length = 2048,required = False)
