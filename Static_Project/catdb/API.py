@@ -376,6 +376,7 @@ def api_show_enter_judgement(request):
 		_judgement.ex =  request.POST['ex'] == "true"
 		_judgement.cert =  request.POST['cert'] == "true"
 		_judgement.biv =  request.POST['biv'] == "true"
+		_judgement.nom =  request.POST['biv'] == "true"
 		_judgement.comment = request.POST['comment']
 		_newTitle = C['nextCert'].title.name if ( _judgement.cert and  C['nextCert'].title != C['nextCert'].predecessor.title) else None
 		_ems = cat_EMS.objects.filter(cat_id = _cat.id)
@@ -421,6 +422,7 @@ def api_show_enter_litter_judgement(request):
 		_litter.showId = show.objects.get(id = request.POST['show'])
 		_litter.judge = judge.objects.get(id = request.POST['judge'])
 		_litter.attendence = request.POST['abs'] != 'true'
+		_litter.nom = request.POST['nom'] == 'true'
 		_litter.litter_nr = request.POST['litter']
 		_litter.comment = request.POST['comment']
 		_litter.rank = int(request.POST['rank'])

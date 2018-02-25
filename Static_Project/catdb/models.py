@@ -70,6 +70,8 @@ class EMS(models.Model):
 	id = models.AutoField(primary_key = True)
 	breed = models.CharField(max_length = 3)
 	ems = models.CharField(max_length = 15)
+	category = models.IntegerField(null = True)
+	group = models.IntegerField(null = True)
 	
 class ghost_EMS(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -141,6 +143,7 @@ class judgement(models.Model):
 	ex = models.IntegerField()
 	cert = models.BooleanField()
 	biv = models.BooleanField()
+	nom = models.BooleanField()
 	color =  models.ForeignKey('cat_EMS',on_delete = models.PROTECT,null = True)
 	comment = models.CharField(max_length = 2048, null = True)
 
@@ -158,6 +161,7 @@ class judgementLitter(models.Model):
 	showId = models.ForeignKey('show',on_delete = models.PROTECT)
 	judge = models.ForeignKey('judge',on_delete = models.PROTECT)
 	attendence = models.BooleanField()
+	nom = models.BooleanField()
 	rank = models.IntegerField()
 	comment = models.CharField(max_length = 2048)
 	litter_nr = models.CharField(max_length = 2)
