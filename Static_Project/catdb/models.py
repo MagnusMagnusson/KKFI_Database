@@ -141,8 +141,8 @@ class judgement(models.Model):
 	ex = models.IntegerField()
 	cert = models.BooleanField()
 	biv = models.BooleanField()
-	color =  models.ForeignKey('cat_EMS',on_delete = models.PROTECT)
-	comment = models.CharField(max_length = 2048)
+	color =  models.ForeignKey('cat_EMS',on_delete = models.PROTECT,null = True)
+	comment = models.CharField(max_length = 2048, null = True)
 
 		
 class cert(models.Model):

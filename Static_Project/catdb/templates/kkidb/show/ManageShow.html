@@ -195,6 +195,7 @@
                         $("#id_neutered")[0].checked = d['neutered'];
                         $("#id_current_point").val(d['neutered'] ? d['Ncert'] : d['cert']);
                         $("#id_next_point").val(d['nextCert']);
+                        $("#id_CatId").val(d['Id']);
                     }
                     else {
                         $('#message').html("<h2> error " + d.error + " occurred</h2>")
@@ -244,14 +245,17 @@
         return false;
     });
 
-    $("#addJudge").submit(function (event) {
+    $("#addJudgement").submit(function (event) {
         event.preventDefault();
 
-        var form = $("#addJudge")[0];
+        var form = $("#addJudgement")[0];
         var D = {};
         var inputs = form.getElementsByTagName('input');
         for (var i = 0; i < inputs.length; i++) {
             D[inputs[i].name] = inputs[i].value;
+            if (D[inputs[i].name] == "on") {
+                D[inputs[i].name] = inputs[i].checked;
+            }
         }
         var inputs = form.getElementsByTagName('select');
         for (var i = 0; i < inputs.length; i++) {
@@ -261,15 +265,18 @@
         if (window.Siteshow == "") {
             return;
         }
-        D.judge = FORM.finalList($("input[name = 'judge']").val(), 'judge')[0].id;
         $.ajax({
             type: "POST",
-            url: "../../api/shows/judge_register",
+            url: "../../api/shows/enterJudgement",
             dataType: 'json',
             data: D,
             success: function (d) {
                 if (d.success) {
-                    $('#message').html("<h2> IT WORKED. new judge entered </h2>")
+
+                    $('#message').html(d['newTitle'] ? "<h2> Judgement entered. NEW TITLE: "+ d['newTitleName'] + " </h2>":"<h2> Judgement entered. </h2>")
+                    if (d['newTitle']) {
+                        alert("New title! " + d['newTitleName']);
+                    }
                 }
                 else {
                     $('#message').html("<h2> error " + d.error + " occurred</h2>")

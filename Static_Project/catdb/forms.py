@@ -131,6 +131,13 @@ class form_show_judgement_enter(forms.Form):
 		required = True,
 		max_length = 50
 		)		
+
+	CatId = forms.CharField(
+		max_length = 50,
+		label="",
+		widget=forms.HiddenInput()
+		)	
+
 	entryCatName = forms.CharField(
 		disabled = True,
 		max_length = 50
@@ -146,11 +153,11 @@ class form_show_judgement_enter(forms.Form):
 		disabled = True,
 		max_length = 10)
 	judge = forms.ModelChoiceField(queryset=None)
-	abs = forms.BooleanField(initial = False)
-	ex = forms.BooleanField(initial = False)
-	cert = forms.BooleanField(initial = False)
-	biv = forms.BooleanField(initial = False)
-	point = forms.BooleanField(initial = False)
+	abs = forms.BooleanField(initial = False, required = False)
+	ex = forms.BooleanField(initial = False, required = False)
+	cert = forms.BooleanField(initial = False,  required = False)
+	biv = forms.BooleanField(initial = False,  required = False)
+	comment = forms.CharField(max_length = 2048,required = False)
 
 	
 class form_show_color_judgement_enter(forms.Form):
@@ -158,6 +165,7 @@ class form_show_color_judgement_enter(forms.Form):
 		required = True,
 		max_length = 50
 		)		
+		
 	entryCatName = forms.CharField(
 		disabled = True,
 		max_length = 50

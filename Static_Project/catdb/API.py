@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.template import loader
 from django.utils.encoding import *
+from django.db import transaction
 from catdb.models import *
 from .forms import SearchCat
 from .forms import AddCat
@@ -12,6 +13,7 @@ import time
 from datetime import datetime
 from datetime import date
 from DatabaseHelpers import CatDbHelper
+import re
 
 
 def form_cat(request):
@@ -336,6 +338,69 @@ def api_entry_get_info(request):
 			D['Ncert'] = D['Ncert'].cert.certName + str(D['Ncert'].cert.certRank)
 		if(D['nextCert']):
 			D['nextCert'] = D['nextCert'].certName + str(D['nextCert'].certRank)
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+@transaction.atomic
+def api_show_enter_judgement(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	try:		
+		entryNum = request.POST['entryCatId']
+		showNum = request.POST['show']
+		C = CatDbHelper.getEntryInfo(entryNum,showNum)
+		if int(C['Id']) != int(request.POST['CatId']):
+			D = {
+				'success':False,
+				'error':"Integrety Error",
+				'message':"The cat specified does not match the entry number [" + str(int(C['Id'])) +" vs " + str(int(request.POST['CatId'])) +" ]"
+			}
+			return JsonResponse(D)
+		_cat = cat.objects.get(id = int(C['Id']))
+		_judgement = judgement()
+		_entry = show_entry.objects.get(showId = int(showNum), cat_show_number = int(entryNum), catId = _cat)
+		_show = show.objects.get(id = int(showNum))
+		_judge = judge.objects.get(id = request.POST['judge'])
+		_judgement.showId = _show
+		_judgement.entryId = _entry
+		_judgement.judge = _judge
+		_judgement.attendence = not (request.POST['abs'] == "true")
+		_judgement.ex =  request.POST['ex'] == "true"
+		_judgement.cert =  request.POST['cert'] == "true"
+		_judgement.biv =  request.POST['biv'] == "true"
+		_judgement.comment = request.POST['comment']
+		_newTitle = C['nextCert'].title.name if ( _judgement.cert and  C['nextCert'].title != C['nextCert'].predecessor.title) else None
+		_ems = cat_EMS.objects.filter(cat_id = _cat.id)
+		if(len(_ems) > 0):
+			_ems = _ems.latest('reg_date')
+		else:
+			_ems = None
+		_judgement.save()
+		_cert = None
+		if(_judgement.cert):
+			_cert = cert_judgement()
+			_cert.cat = _cat
+			_cert.judgement = _judgement
+			_cert.date = _show.date
+			_cert.cert = C['nextCert']
+			_cert.save()
+
+		D = {
+			'success': True,
+			'Judgement' : _judgement.id,
+			'Certificate' : _cert.id if _cert else None,
+			'newTitle' : _newTitle != None,
+			'newTitleName' : _newTitle
+			}
+
 	except Exception as ex:
 		D = {
 			'success':False,
