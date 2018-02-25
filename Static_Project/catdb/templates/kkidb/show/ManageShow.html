@@ -30,6 +30,16 @@
         <input type="submit"></input>
     </form>
 
+    <form id="litterJudgement" action="POST">
+        <h2>Enter Litter Judgement</h2>
+        {% for field in litterJudgement %}
+        <p>{{field.label_tag}}</p>{{field}}<br />
+        {% endfor %}
+        {% csrf_token %}
+        <input type="submit"></input>
+    </form>
+
+
     <div id="message"></div>
     <div id="catList">lol</div>
 </body>
@@ -287,31 +297,39 @@
         return false;
     });
 
-    $("#addLitter").submit(function (event) {
+
+    $("#litterJudgement").submit(function (event) {
         event.preventDefault();
 
-        var form = $("#addLitter")[0];
+        var form = $("#litterJudgement")[0];
         var D = {};
         var inputs = form.getElementsByTagName('input');
         for (var i = 0; i < inputs.length; i++) {
             D[inputs[i].name] = inputs[i].value;
+            if (D[inputs[i].name] == "on") {
+                D[inputs[i].name] = inputs[i].checked;
+            }
         }
         var inputs = form.getElementsByTagName('select');
         for (var i = 0; i < inputs.length; i++) {
             D[inputs[i].name] = inputs[i].value;
         }
+        D['show'] = window.Siteshow;
         if (window.Siteshow == "") {
             return;
         }
-        D.litterCat = FORM.finalList($("input[name = 'litterCat']").val(), 'litter')[0].id;
         $.ajax({
             type: "POST",
-            url: "../../api/shows/litter_register/",
+            url: "../../api/shows/enterLitterJudgement",
             dataType: 'json',
             data: D,
             success: function (d) {
                 if (d.success) {
-                    $('#message').html("<h2> IT WORKED. Cat now part of a litter </h2>")
+
+                    $('#message').html(d['newTitle'] ? "<h2> Judgement entered. NEW TITLE: " + d['newTitleName'] + " </h2>" : "<h2> Judgement entered. </h2>")
+                    if (d['newTitle']) {
+                        alert("New title! " + d['newTitleName']);
+                    }
                 }
                 else {
                     $('#message').html("<h2> error " + d.error + " occurred</h2>")
@@ -321,4 +339,5 @@
         });
         return false;
     });
+
 </script>

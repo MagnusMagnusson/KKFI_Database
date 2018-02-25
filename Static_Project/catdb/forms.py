@@ -1,5 +1,6 @@
 from django import forms 
 from catdb.models import judge
+from catdb.models import litter
 import datetime
 from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import extras
@@ -176,3 +177,21 @@ class form_show_color_judgement_enter(forms.Form):
 	neutered = forms.BooleanField(disabled = True)
 	new_EMS = forms.CharField(
 		max_length = 10)
+
+
+	
+class form_show_judgement_litter_enter(forms.Form):
+	def __init__(self,*args,**kwargs):
+		self.show_id = kwargs.pop('show_id')
+		super(form_show_judgement_litter_enter,self).__init__(*args,**kwargs)
+		self.fields['judge'].queryset = judge.objects.filter(judge_show__showId = self.show_id)
+		_litts = litter.objects.filter(catId__showId = self.show_id)
+		if(len(_litts) > 0):
+			_tempList = _litts.distinct('letterId').values_list('letterId', flat=True)
+			self.fields['litter'].choices  = [(x,x) for x in _tempList]
+	
+	judge = forms.ModelChoiceField(queryset=None)
+	litter = forms.ChoiceField(choices=[])
+	abs = forms.BooleanField(initial = False, required = False)
+	rank = forms.IntegerField()
+	comment = forms.CharField(max_length = 2048,required = False)

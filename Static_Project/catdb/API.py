@@ -408,3 +408,34 @@ def api_show_enter_judgement(request):
 			'message':str(ex)
 			}
 	return JsonResponse(D)
+
+
+def api_show_enter_litter_judgement(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	try:		
+		_litter = judgementLitter()
+		_litter.showId = show.objects.get(id = request.POST['show'])
+		_litter.judge = judge.objects.get(id = request.POST['judge'])
+		_litter.attendence = request.POST['abs'] != 'true'
+		_litter.litter_nr = request.POST['litter']
+		_litter.comment = request.POST['comment']
+		_litter.rank = int(request.POST['rank'])
+		_litter.save()
+		D = {
+			'success': True,
+			'litter' : _litter.id
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+api_show_enter_litter_judgement
