@@ -28,7 +28,7 @@ class CatDbHelper():
 			_ems = cat_EMS.objects.filter(cat_id = _cat.id)
 			if(len(_ems) > 0):
 				_ems = _ems.latest('reg_date')
-				D['ems'] =str(_ems.ems.breed) + " " + str(_ems.ems.breed)
+				D['ems'] =str(_ems.ems.breed) + " " + str(_ems.ems.ems)
 			_Npoint = cert_judgement.objects.filter(cat = _cat,cert__neutered = True)
 			_point = cert_judgement.objects.filter(cat = _cat,cert__neutered = False)
 			if(len(_point) > 0):

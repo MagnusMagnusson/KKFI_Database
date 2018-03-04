@@ -192,6 +192,62 @@ def view_ShowManage(request):
 		}
 	return HttpResponse(template.render(context,request))
 
+def view_ShowJudgements(request):
+	j = judgement.objects.filter(showId_id = request.GET['show']).order_by('entryId__cat_show_number')
+
+	template = loader.get_template('kkidb/show/ShowJudgements.html')
+	if(len(j) > 0):
+		context = {
+			'Judgements': j,
+		}
+	else:
+		context = {
+		}
+	return HttpResponse(template.render(context, request))
+
+def view_DeleteJudgements(request):
+	j = judgement.objects.filter(id = request.GET['id'])
+	c =  cert_judgement.objects.filter(judgement = j)
+	S = None
+
+	if(len(c) == 1):
+		c[0].delete()	
+	if(len(j) == 1):
+		S = j[0].showId
+		j[0].delete()	
+	
+		
+	js = judgement.objects.filter(showId = S)
+	template = loader.get_template('kkidb/show/ShowJudgements.html')
+	if(len(j) > 0):
+		context = {
+			'Judgements': js,
+		}
+	else:
+		context = {
+		}
+	return HttpResponse(template.render(context, request))
+
+def view_EditJudgements(request):
+	j = judgement.objects.get(id = request.GET['id'])
+	judgementEditForm = form_show_judgement_enter(show_id = j.showId_id,
+											   initial={
+												   'entryCatId':j.entryId_id,
+												   'abs': not j.attendence,
+												   'judge': j.judge,
+												   'ex' : j.ex,
+												   'cert' : j.cert,
+												   'biv' : j.biv,
+												   'nom' : j.nom,
+												   'comment' : j.comment
+												   })
+	template = loader.get_template('kkidb/show/EditJudgement.html')
+	context = {
+		'judgementEditForm':judgementEditForm,
+		'Judgement': j,
+		'show': j.showId
+	}
+	return HttpResponse(template.render(context, request))
 
 def view_ShowNominations(request):
 
@@ -204,22 +260,22 @@ def view_ShowNominations(request):
 	writer.writerow(['Entry Number', 'Judge'])
 	writer.writerow(['Younglings'])
 	for x in D['Younglings']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Kitten'])
 	for x in D['Kittens']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Male'])
 	for x in D['Males']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Female'])
 	for x in D['Females']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Neutered Males'])
 	for x in D['nMales']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Neutered Females'])
 	for x in D['nFemales']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 
 	return response
 

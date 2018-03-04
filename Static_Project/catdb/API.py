@@ -373,7 +373,7 @@ def api_show_enter_judgement(request):
 		_judgement.entryId = _entry
 		_judgement.judge = _judge
 		_judgement.attendence = not (request.POST['abs'] == "true")
-		_judgement.ex =  request.POST['ex'] == "true"
+		_judgement.ex =  request.POST['ex']
 		_judgement.cert =  request.POST['cert'] == "true"
 		_judgement.biv =  request.POST['biv'] == "true"
 		_judgement.nom =  request.POST['nom'] == "true"
@@ -384,6 +384,7 @@ def api_show_enter_judgement(request):
 			_ems = _ems.latest('reg_date')
 		else:
 			_ems = None
+		_judgement.color = _ems
 		_judgement.save()
 		_cert = None
 		if(_judgement.cert):
@@ -411,12 +412,106 @@ def api_show_enter_judgement(request):
 	return JsonResponse(D)
 
 
+@transaction.atomic
+def api_show_edit_judgement(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	try:		
+		entryNum = request.POST['entryCatId']
+		showNum = request.POST['show']
+		C = CatDbHelper.getEntryInfo(entryNum,showNum)
+		if int(C['Id']) != int(request.POST['CatId']):
+			D = {
+				'success':False,
+				'error':"Integrety Error",
+				'message':"The cat specified does not match the entry number [" + str(int(C['Id'])) +" vs " + str(int(request.POST['CatId'])) +" ]"
+			}
+			return JsonResponse(D)
+		_cat = cat.objects.get(id = int(C['Id']))
+		_show = show.objects.get(id = int(showNum))
+		_judgement = judgement.objects.get(id = request.POST['judgement'])
+
+		_judge = judge.objects.get(id = request.POST['judge'])
+		_judgement.judge = _judge
+		_judgement.attendence = not (request.POST['abs'] == "true")
+		_judgement.ex =  request.POST['ex']
+		_judgement.cert =  request.POST['cert'] == "true"
+		_judgement.biv =  request.POST['biv'] == "true"
+		_judgement.nom =  request.POST['nom'] == "true"
+		_judgement.comment = request.POST['comment']
+		_newTitle = C['nextCert'].title.name if ( _judgement.cert and  C['nextCert'] and C['nextCert'].predecessor and C['nextCert'].title != C['nextCert'].predecessor.title) else None
+		_judgement.save()
+
+		_cert = cert_judgement.objects.filter(judgement = _judgement)
+		if(_judgement.cert):
+			if(len(_cert) == 0):
+				_cert = cert_judgement()
+				_cert.cat = _cat
+				_cert.judgement = _judgement
+				_cert.date = _show.date
+				_cert.cert = C['nextCert']
+				_cert.save()
+		else: 			
+			if(len(_cert) > 0):
+				_cert.delete()
+
+		D = {
+			'success': True,
+			'Judgement' : _judgement.id,
+			'Certificate' : _cert.id if _cert else None,
+			'newTitle' : _newTitle != None,
+			'newTitleName' : _newTitle
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+
+def api_show_enter_color_judgement(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+	try:		
+		emsString = request.POST['new_EMS']
+		ems_breed = emsString[:3].strip().upper()
+		ems_color = emsString[4:].strip().lower()
+		ems = EMS.objects.get(breed = ems_breed, ems = ems_color)
+
+		judgement = cat_EMS()
+		judgement.cat = cat.objects.get(id = request.POST['colCatId'])
+		judgement.ems = ems 
+		judgement.reg_date = show.objects.get(id = request.POST['show']).date
+		judgement.save()
+		D = {
+			'success': True
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
 def api_show_enter_litter_judgement(request):
 	if not request.is_ajax():
 		D = {
 			'success':False,
 			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
 			}
+		return JsonResponse(D)
 	try:		
 		_litter = judgementLitter()
 		_litter.showId = show.objects.get(id = request.POST['show'])

@@ -12,13 +12,15 @@
     <p id="showID" style="display:none;">{{show.id}}</p>
     <h2>{{show.name}}</h2>
 
+    <div id="message"></div>
+    <div id="catList">lol</div>
     <form id="addJudgement" action="POST">
         <h2>Enter Show Judgement</h2>
         {% for field in judgementAddForm %}
         <p>{{field.label_tag}}</p>{{field}}<br />
         {% endfor %}
         {% csrf_token %}
-        <input type="submit"></input>
+        <input type="submit"></input>col
     </form>
 
     <form id="addColor" action="POST">
@@ -38,10 +40,6 @@
         {% csrf_token %}
         <input type="submit"></input>
     </form>
-
-
-    <div id="message"></div>
-    <div id="catList">lol</div>
 </body>
 </html>
 
@@ -122,8 +120,12 @@
 
         $("#id_entryCatId").on('input', function () {
             var val = $("#id_entryCatId").val();
-            getEntryInfo(val);
-        }); 
+            getEntryInfo(val,false);
+        });
+        $("#id_colEntryCatId").on('input', function () {
+            var val = $("#id_colEntryCatId").val();
+            getEntryInfo(val, true);
+        });
         function getCatNames(name, type) {
             D = { 'name': name, 'gender': type }
             $.ajax({
@@ -191,7 +193,7 @@
             });
         }
 
-        function getEntryInfo(ID) {
+        function getEntryInfo(ID,color) {
             D = { 'entry': ID, 'show': Siteshow }
             $.ajax({
                 type: "GET",
@@ -200,12 +202,21 @@
                 data: D,
                 success: function (d) {
                     if (d.success) {
-                        $("#id_entryCatName").val(d['name']);
-                        $("#id_color").val(d['emd']);
-                        $("#id_neutered")[0].checked = d['neutered'];
-                        $("#id_current_point").val(d['neutered'] ? d['Ncert'] : d['cert']);
-                        $("#id_next_point").val(d['nextCert']);
-                        $("#id_CatId").val(d['Id']);
+                        if (!color) {
+                            $("#id_entryCatName").val(d['name']);
+                            $("#id_color").val(d['emd']);
+                            $("#id_neutered")[0].checked = d['neutered'];
+                            $("#id_current_point").val(d['neutered'] ? d['Ncert'] : d['cert']);
+                            $("#id_next_point").val(d['nextCert']);
+                            $("#id_color").val(d['ems']);
+                            $("#id_CatId").val(d['Id']); id_color
+                        }
+                        else {
+                            $("#id_colEntryCatName").val(d['name']);
+                            $("#id_colColor").val(d['ems']);
+                            $("#id_colNeutered")[0].checked = d['neutered'];
+                            $("#id_colCatId").val(d['Id']);
+                        }
                     }
                     else {
                         $('#message').html("<h2> error " + d.error + " occurred</h2>")
@@ -218,43 +229,7 @@
 </script>
 
 <script>
-    //Submit scripts
-    $("#addCat").submit(function (event) {
-        event.preventDefault();
-
-        var form = $("#addCat")[0];
-        var D = {};
-        var inputs = form.getElementsByTagName('input');
-        for (var i = 0; i < inputs.length; i++) {
-            D[inputs[i].name] = inputs[i].value;
-        }
-        var inputs = form.getElementsByTagName('select');
-        for (var i = 0; i < inputs.length; i++) {
-            D[inputs[i].name] = inputs[i].value;
-        }
-        D['show'] = window.Siteshow;
-        if (window.Siteshow == "") {
-            return;
-        }
-        D.cat = FORM.finalList($("input[name = 'cat']").val(), 'cat')[0].id;
-        $.ajax({
-            type: "POST",
-            url: "../../api/shows/register/",
-            dataType: 'json',
-            data: D,
-            success: function (d) {
-                if (d.success) {
-                    $('#message').html("<h2> IT WORKED. New show at " + d.id + " </h2>")
-                }
-                else {
-                    $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                }
-
-            }
-        });
-        return false;
-    });
-
+//Submit scripts
     $("#addJudgement").submit(function (event) {
         event.preventDefault();
 
@@ -283,10 +258,49 @@
             success: function (d) {
                 if (d.success) {
 
-                    $('#message').html(d['newTitle'] ? "<h2> Judgement entered. NEW TITLE: "+ d['newTitleName'] + " </h2>":"<h2> Judgement entered. </h2>")
+                    $('#message').html(d['newTitle'] ? "<h2> Judgement entered for " + $("#id_entryCatId").val() +". NEW TITLE: " + d['newTitleName'] + " </h2>" : "<h2> Judgement entered for " + $("#id_entryCatId").val() + ". </h2>")
+                    $("#addJudgement")[0].reset();
                     if (d['newTitle']) {
                         alert("New title! " + d['newTitleName']);
                     }
+                }
+                else {
+                    $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                }
+
+            }
+        });
+        return false;
+    });
+
+    $("#addColor").submit(function (event) {
+        event.preventDefault();
+
+        var form = $("#addColor")[0];
+        var D = {};
+        var inputs = form.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+            if (D[inputs[i].name] == "on") {
+                D[inputs[i].name] = inputs[i].checked;
+            }
+        }
+        var inputs = form.getElementsByTagName('select');
+        for (var i = 0; i < inputs.length; i++) {
+            D[inputs[i].name] = inputs[i].value;
+        }
+        D['show'] = window.Siteshow;
+        if (window.Siteshow == "") {
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "../../api/shows/enterColorJudgement",
+            dataType: 'json',
+            data: D,
+            success: function (d) {
+                if (d.success) {
+                    $('#message').html( "<h2> New Color entered. <\h2>");
                 }
                 else {
                     $('#message').html("<h2> error " + d.error + " occurred</h2>")

@@ -28,6 +28,7 @@ class Command(BaseCommand):
 			first = True
 			print("loaded")
 			done = 0
+			colorless = 0
 			lastpercent = 0.05
 			for row in spamreader:
 				if(first):
@@ -40,19 +41,19 @@ class Command(BaseCommand):
 					C.reg_nr = row[0]
 					C.gender = (row[5] != 'Fress')
 					if(row[2] != ''):
-						date_object = datetime.strptime(row[2], '%d.%m.%Y %H:%M:%S')
+						date_object = datetime.strptime(row[2], '%d.%m.%y %H:%M')
 						C.registered = date_object.date()
 					else:
-						date_object = datetime.strptime("1.1.1970 05:05:05", '%d.%m.%Y %H:%M:%S')
+						date_object = datetime.strptime("1.1.1970 05:05", '%d.%m.%Y %H:%M')
 						C.registered = date_object.date()
 
 					if(row[4] != ''):
-						date_object = datetime.strptime(row[4], '%d.%m.%Y %H:%M:%S')
+						date_object = datetime.strptime(row[4], '%d.%m.%y %H:%M')
 						C.birth = date_object.date()
 					else:
-						date_object = datetime.strptime("1.1.1970 05:05:05", '%d.%m.%Y %H:%M:%S')
+						date_object = datetime.strptime("1.1.1970 05:05", '%d.%m.%Y %H:%M')
 						C.birth = date_object.date()
-
+						
 					if(row[10] != ''):
 						try:
 							daddy = cat.objects.get(reg_nr = int(row[10]))
@@ -69,11 +70,36 @@ class Command(BaseCommand):
 						except ObjectDoesNotExist:
 							C.dam = None	
 					C.save()
-					if(int(row[22]) != 0):
+					
+					if(row[7] != ''):
+						emsString = row[6]
+						ems_breed = emsString[:3].strip().upper()
+						ems_color = emsString[4:].strip().lower()
+						_ems = EMS.objects.filter(breed = ems_breed,ems = ems_color)
+						if(len(_ems) == 0):
+							colorless += 1
+							newEms = EMS()
+							newEms.breed = ems_breed
+							newEms.ems = ems_color
+							newEms.category = -1
+							newEms.save()
+							_ems = [newEms]
+						else:
+							if(len(_ems) > 1):
+								print("'" + ems_breed + "' and '" + ems_color + "' appears often. cat '" + C.name + "' ("+str(C.reg_nr) + ") is colourless" )
+						_ems = _ems[0]
+						ems_field = cat_EMS()
+						ems_field.cat = C 
+						ems_field.ems = _ems
+						ems_field.reg_date = datetime.strptime("1.1.1970 05:05", '%d.%m.%Y %H:%M').date()
+						ems_field.save()
+							
+							
+					if(row[22] != "false"):
 						N = neutered()
 						N.catId = C 
 						if(len(row[21]) > 5):
-							N.date = datetime.strptime(row[21], '%d.%m.%Y %H:%M:%S')
+							N.date = datetime.strptime(row[21], '%d.%m.%y %H:%M')
 						N.save()
 					
 					try:
@@ -81,8 +107,7 @@ class Command(BaseCommand):
 					except: 
 						print("Master detected")
 					for i in range(38,63):
-						row[i] = int(row[i])
-						if(row[i] == 0):
+						if(row[i] == "false"):
 							break
 						
 						givenPoint = cert_judgement()
@@ -102,8 +127,7 @@ class Command(BaseCommand):
 					except:
 						contineu
 					for i in range(63,88):
-						row[i] = int(row[i])
-						if(row[i] == 0):
+						if(row[i] == "false"):
 							break
 						
 						givenPoint = cert_judgement()
@@ -127,6 +151,7 @@ class Command(BaseCommand):
 						print(str(lastpercent*100) + "% done ("+str(done) + " cats registered)")
 						lastpercent += 0.05
 			print("import done ("+str(done + 1)+"/"+str(Length) + " cats registered)")
+			print("Colourless : " + str(colorless))
 			csvfile.close()
 
 		#		C = cat();
