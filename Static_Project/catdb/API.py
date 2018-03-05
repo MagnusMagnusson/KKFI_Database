@@ -475,6 +475,98 @@ def api_show_edit_judgement(request):
 	return JsonResponse(D)
 
 
+@transaction.atomic
+def api_show_edit_cat(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+	try:		
+
+	#GetDefualts
+		c = cat.objects.get(reg_nr = request.POST['reg_nr'])
+		n = neutered.objects.filter(catId = c)
+		neuter = False 
+		neutered_date = None
+		if(len(n) == 1):
+			neuter = True
+			neutered_date = n[0].date
+
+		micro = None	
+		m = microchip.objects.filter(cat = c)
+		if(len(m) > 0):
+			m = m.latest()
+			micro = m.microchip_nr
+		color = ""
+		ems = cat_EMS.objects.filter(cat = c)
+		if(ems > 0):
+			ems = ems.latest('reg_date')
+			color = ems.ems.breed + " " + ems.ems.ems
+
+		certificate = None 
+		NeuterCertificate = None
+		cert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
+		if(len(cert) > 0):
+			certificate = cert.latest('date').cert
+		Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
+		if(len(Ncert) > 0):
+			NeuterCertificate = cert.latest('date').cert
+		default = {
+				'name':c.name,
+				'gender':not c.gender,
+				'birth':c.birth,
+				'registered':c.registered,
+				'dam':c.dam.cat.reg_nr,
+				'reg_nr':c.reg_nr,
+				'neutered':neuter,
+				'neutered_Date':neutered_date,
+				'microchip' : micro,
+				'color' : color,
+				'certificate' : certificate,
+				'neutered_certificate' : NeuterCertificate
+			}
+		#Updates
+
+		if(request.POST['name'] != default['name']):
+			c.name = request.POST['name']
+		c.gender = request.POST['gender'] == "true"
+		if(c.sire != default['sire']):
+			c.sire = parents.objects.get(cat__reg_nr = request.POST['sire'])
+		if(c.dam !=  default['dam']):
+			c.dam = parents.objects.get(cat__reg_nr = request.POST['dam'])
+		if(request.POST['microchip'] !=  default['micro']):
+			m = microchip.objects.filter(cat = c)
+			if(len(m) > 0):
+				m = m.latest()
+				if(m.microchip_nr != request.POST['microchip']):
+					m = microchip()
+					m.cat = c
+					m.microchip_nr = request.POST['microchip']
+		if(request.POST['color'] != default['color']):
+			emsString = request.POST['color']
+			ems_breed = emsString[:3].strip().upper()
+			ems_color = emsString[4:].strip().lower()
+			ems = EMS.objects.get(breed = ems_breed, ems = ems_color)
+			newEmsField = cat_EMS()
+			newEmsField.cat = c
+			newEmsField.ems = ems 
+			newEmsField.reg_date = date.today()
+			newEmsField.save()
+		if (request.POST['neuter']  == "true")!= default["neutered"]:
+			request.POST['neuter']  == "true"
+
+		return JsonResponse(D)
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+
+
 def api_show_enter_color_judgement(request):
 	if not request.is_ajax():
 		D = {

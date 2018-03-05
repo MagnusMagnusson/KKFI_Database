@@ -1,6 +1,7 @@
 from django import forms 
 from catdb.models import judge
 from catdb.models import litter
+from catdb.models import cert
 import datetime
 from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import extras
@@ -82,11 +83,19 @@ class AddCat(forms.Form):
 		max_length = 30, 
 		required = False
 		)
+
 	microchip = forms.CharField(
 		label = "chip",
 		required = False,
 		max_length = 30
 		)
+
+	color = forms.CharField(
+		max_length = 10)
+	
+	certificate = forms.ModelChoiceField(required = False,queryset = cert.objects.filter(neutered = False))
+	neutered_certificate = forms.ModelChoiceField(required = False, queryset = cert.objects.filter(neutered = True))
+
 
 class form_add_show(forms.Form):
 	now = datetime.datetime.now()

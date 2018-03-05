@@ -158,6 +158,10 @@ class cert(models.Model):
 	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT,null = True)
 	neutered = models.BooleanField()
 	title = models.ForeignKey('titles',on_delete = models.PROTECT,null = True)
+	def __str__(self) :
+		s = self.certName + str(self.certRank)
+		return s.encode('utf8')
+
 
 class judgementLitter(models.Model):
 	id = models.AutoField(primary_key = True)

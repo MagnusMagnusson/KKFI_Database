@@ -121,6 +121,58 @@ def catview(request):
 
 	return HttpResponse(template.render(context, request))
 
+def editCat(request):
+	regnr = request.GET['id']
+	c = cat.objects.get(reg_nr = regnr)
+	n = neutered.objects.filter(catId = c)
+	neuter = False 
+	neutered_date = None
+	if(len(n) == 1):
+		neuter = True
+		neutered_date = n[0].date
+
+	micro = None	
+	m = microchip.objects.filter(cat = c)
+	if(len(m) > 0):
+		m = m.latest()
+		micro = m.microchip_nr
+	color = ""
+	ems = cat_EMS.objects.filter(cat = c)
+	if(ems > 0):
+		ems = ems.latest('reg_date')
+		color = ems.ems.breed + " " + ems.ems.ems
+
+	certificate = None 
+	NeuterCertificate = None
+	cert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
+	if(len(cert) > 0):
+		certificate = cert.latest('date').cert
+	Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
+	if(len(Ncert) > 0):
+		NeuterCertificate = cert.latest('date').cert
+	form = AddCat(initial={
+			'name':c.name,
+			'gender':not c.gender,
+			'birth':c.birth,
+			'registered':c.registered,
+			'dam':c.dam.cat.reg_nr,
+			'reg_nr':c.reg_nr,
+			'neutered':neuter,
+			'neutered_Date':neutered_date,
+			'microchip' : micro,
+			'color' : color,
+			'certificate' : certificate,
+			'neutered_certificate' : NeuterCertificate
+		})
+	template = loader.get_template('kkidb/cat/EditCat.html')
+
+	context = {
+		'form': form
+		}
+
+	return HttpResponse(template.render(context, request))
+
+
 def addcat(request):
 	form = AddCat()
 	template = loader.get_template('kkidb/AddCat.html')
@@ -129,7 +181,6 @@ def addcat(request):
 		}
 
 	return HttpResponse(template.render(context, request))
-
 
 def findshow(request):
 	s = show.objects.all()
