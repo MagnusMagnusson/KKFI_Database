@@ -476,15 +476,14 @@ def api_show_edit_judgement(request):
 
 
 @transaction.atomic
-def api_show_edit_cat(request):
+def api_cat_edit(request):
 	if not request.is_ajax():
 		D = {
 			'success':False,
 			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
 			}
-	try:		
-
-	#GetDefualts
+	try:	
+	#Get Default values, i.e current value. 
 		c = cat.objects.get(reg_nr = request.POST['reg_nr'])
 		n = neutered.objects.filter(catId = c)
 		neuter = False 
@@ -496,7 +495,7 @@ def api_show_edit_cat(request):
 		micro = None	
 		m = microchip.objects.filter(cat = c)
 		if(len(m) > 0):
-			m = m.latest()
+			m = m.latest('id')
 			micro = m.microchip_nr
 		color = ""
 		ems = cat_EMS.objects.filter(cat = c)
@@ -506,17 +505,18 @@ def api_show_edit_cat(request):
 
 		certificate = None 
 		NeuterCertificate = None
-		cert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
-		if(len(cert) > 0):
-			certificate = cert.latest('date').cert
+		normalCert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
+		if(len(normalCert) > 0):
+			certificate = normalCert.latest('date').cert
 		Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
 		if(len(Ncert) > 0):
-			NeuterCertificate = cert.latest('date').cert
+			NeuterCertificate = Ncert.latest('date').cert
 		default = {
 				'name':c.name,
 				'gender':not c.gender,
 				'birth':c.birth,
 				'registered':c.registered,
+				'sire':c.sire.cat.reg_nr,
 				'dam':c.dam.cat.reg_nr,
 				'reg_nr':c.reg_nr,
 				'neutered':neuter,
@@ -528,22 +528,20 @@ def api_show_edit_cat(request):
 			}
 		#Updates
 
-		if(request.POST['name'] != default['name']):
+		if( request.POST['name'] != "" and request.POST['name'] != default['name']):
 			c.name = request.POST['name']
 		c.gender = request.POST['gender'] == "true"
-		if(c.sire != default['sire']):
+		if(request.POST['sire'] != "" and request.POST['sire'] != default['sire']):
 			c.sire = parents.objects.get(cat__reg_nr = request.POST['sire'])
-		if(c.dam !=  default['dam']):
+		if(request.POST['dam'] != "" and request.POST['dam'] !=  default['dam']):
 			c.dam = parents.objects.get(cat__reg_nr = request.POST['dam'])
-		if(request.POST['microchip'] !=  default['micro']):
-			m = microchip.objects.filter(cat = c)
-			if(len(m) > 0):
-				m = m.latest()
-				if(m.microchip_nr != request.POST['microchip']):
-					m = microchip()
-					m.cat = c
-					m.microchip_nr = request.POST['microchip']
-		if(request.POST['color'] != default['color']):
+		if(request.POST['microchip'] != "" and request.POST['microchip'] != default['microchip']):
+			m = microchip()
+			m.cat = c
+			m.microchip_nr = request.POST['microchip']
+			m.save()
+
+		if(request.POST['color'] != "" and request.POST['color'] != default['color']):
 			emsString = request.POST['color']
 			ems_breed = emsString[:3].strip().upper()
 			ems_color = emsString[4:].strip().lower()
@@ -553,9 +551,33 @@ def api_show_edit_cat(request):
 			newEmsField.ems = ems 
 			newEmsField.reg_date = date.today()
 			newEmsField.save()
-		if (request.POST['neuter']  == "true")!= default["neutered"]:
-			request.POST['neuter']  == "true"
+		if ((request.POST['neutered']  == "true") != default["neutered"]):
+			if(request.POST['neutered']  == "true"):
+				n = neutered()
+				n.catId = c 
+				n.date = date(request.POST['neutered_Date_year'],request.POST['neutered_Date_month'],request.POST['neutered_Date_day'])
+			else:
+				n = neutered.objects.get(catID = c)
+				n.delete()
 
+		if(request.POST['certificate'] != "" and  (default['certificate'] == None or int(request.POST['certificate']) != default['certificate'].id)):
+			i = int(request.POST['certificate'])
+			_cert = cert_judgement()
+			_cert.cat = c
+			_cert.cert = cert.objects.get(id = i, neutered = False)
+			_cert.date = date.today()
+			_cert.save()
+
+		if(request.POST['neutered_certificate'] != "" and (default['neutered_certificate'] == None or int(request.POST['neutered_certificate']) != default['neutered_certificate'].id)):
+			i = int(request.POST['neutered_certificate'])
+			_cert = cert_judgement()
+			_cert.cat = c
+			_cert.cert = cert.objects.get(id = i, neutered = True)
+			_cert.date = date.today()
+			_cert.save()
+		D = {
+			'success' : True
+		}
 		return JsonResponse(D)
 	except Exception as ex:
 		D = {

@@ -69,10 +69,10 @@ class AddCat(forms.Form):
 		widget = forms.RadioSelect,
 		choices = genderChoices
 		)
-	birth = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
-	registered = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
+	birth = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
+	registered = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
 	neutered = forms.BooleanField(required = False)
-	neutered_Date = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
+	neutered_Date = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
 	sire = forms.CharField(
 		label = "sire",
 		max_length = 30,
@@ -91,7 +91,8 @@ class AddCat(forms.Form):
 		)
 
 	color = forms.CharField(
-		max_length = 10)
+		max_length = 10,
+		required = False)
 	
 	certificate = forms.ModelChoiceField(required = False,queryset = cert.objects.filter(neutered = False))
 	neutered_certificate = forms.ModelChoiceField(required = False, queryset = cert.objects.filter(neutered = True))

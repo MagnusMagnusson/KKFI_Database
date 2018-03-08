@@ -134,7 +134,7 @@ def editCat(request):
 	micro = None	
 	m = microchip.objects.filter(cat = c)
 	if(len(m) > 0):
-		m = m.latest()
+		m = m.latest('id')
 		micro = m.microchip_nr
 	color = ""
 	ems = cat_EMS.objects.filter(cat = c)
@@ -155,6 +155,7 @@ def editCat(request):
 			'gender':not c.gender,
 			'birth':c.birth,
 			'registered':c.registered,
+			'sire':c.sire.cat.reg_nr,
 			'dam':c.dam.cat.reg_nr,
 			'reg_nr':c.reg_nr,
 			'neutered':neuter,

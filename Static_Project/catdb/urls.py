@@ -22,6 +22,7 @@ urlpatterns = [
 
 	#JSON REQUESTS
 	url(r'^api/create_show/', views.api_create_show, name='api_create_show'),
+	url(r'^api/cats/editCat', views.api_cat_edit, name='api_cat_edit'),
 	url(r'^api/shows/register', views.api_show_entry_register, name='api_show_entry_register'),
 	url(r'^api/shows/find_entry_name/*', views.api_entry_search_name, name='api_entry_search_name'),
 	url(r'^api/shows/litter_register/*', views.api_show_litter_entry_register, name='api_show_litter_entry_register'),

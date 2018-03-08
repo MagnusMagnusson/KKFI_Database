@@ -59,7 +59,7 @@
             D['gender'] = $('input[name=gender]:checked').val() == "False";
             $.ajax({
                 type: "POST",
-                url: "../../api/shows/ffffff",
+                url: "../../api/cats/editCat",
                 dataType: 'json',
                 data: D,
                 success: function (d) {
