@@ -21,8 +21,8 @@ echo "CREATE DATABASE kkidb;
 CREATE USER kkidb WITH PASSWORD 'catdb';
 ALTER ROLE kkidb SET client_encoding TO 'utf8';
 ALTER ROLE kkidb SET default_transaction_isolation TO 'read committed';
-ALTER ROLE kkidb SET teimzone to 'UTC';
-GRANT ALL PRIVILAGES ON DATABASE kkidb TO kkidb;" | sudo -u postgres psql;
+ALTER ROLE kkidb SET timezone to 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE kkidb TO kkidb;" | sudo -u postgres psql;
 
 
 echo 'installing Django'
