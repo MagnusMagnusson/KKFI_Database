@@ -253,6 +253,7 @@ def view_ShowJudgements(request):
 	if(len(j) > 0):
 		context = {
 			'Judgements': j,
+			'showId' : request.GET['show']
 		}
 	else:
 		context = {
@@ -303,6 +304,25 @@ def view_EditJudgements(request):
 	}
 	return HttpResponse(template.render(context, request))
 
+def view_ShowViewEntries(request):
+	
+	template = loader.get_template('kkidb/show/viewContestants.html')
+	_showid = request.GET['show']
+	_show = show.objects.get(id = _showid)
+	_cats = show_entry.objects.filter(showId = _show)
+	returnList = []
+	for c in _cats :
+		D = CatDbHelper.getCatInfo(c.catId)
+		D['cat_show_number'] = c.cat_show_number
+		returnList.append(D)
+	context = {
+		 'show':_show,
+		 'cats':returnList
+		}
+	return HttpResponse(template.render(context, request))
+
+
+
 def view_ShowNominations(request):
 
     # Create the HttpResponse object with the appropriate CSV header.
@@ -332,6 +352,8 @@ def view_ShowNominations(request):
 		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 
 	return response
+
+ 
 
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')
