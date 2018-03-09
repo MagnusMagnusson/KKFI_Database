@@ -485,47 +485,7 @@ def api_cat_edit(request):
 	try:	
 	#Get Default values, i.e current value. 
 		c = cat.objects.get(reg_nr = request.POST['reg_nr'])
-		n = neutered.objects.filter(catId = c)
-		neuter = False 
-		neutered_date = None
-		if(len(n) == 1):
-			neuter = True
-			neutered_date = n[0].date
-
-		micro = None	
-		m = microchip.objects.filter(cat = c)
-		if(len(m) > 0):
-			m = m.latest('id')
-			micro = m.microchip_nr
-		color = ""
-		ems = cat_EMS.objects.filter(cat = c)
-		if(ems > 0):
-			ems = ems.latest('reg_date')
-			color = ems.ems.breed + " " + ems.ems.ems
-
-		certificate = None 
-		NeuterCertificate = None
-		normalCert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
-		if(len(normalCert) > 0):
-			certificate = normalCert.latest('date').cert
-		Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
-		if(len(Ncert) > 0):
-			NeuterCertificate = Ncert.latest('date').cert
-		default = {
-				'name':c.name,
-				'gender':not c.gender,
-				'birth':c.birth,
-				'registered':c.registered,
-				'sire':c.sire.cat.reg_nr,
-				'dam':c.dam.cat.reg_nr,
-				'reg_nr':c.reg_nr,
-				'neutered':neuter,
-				'neutered_Date':neutered_date,
-				'microchip' : micro,
-				'color' : color,
-				'certificate' : certificate,
-				'neutered_certificate' : NeuterCertificate
-			}
+		default = CatDbHelper.getCatInfo(c)
 		#Updates
 
 		if( request.POST['name'] != "" and request.POST['name'] != default['name']):

@@ -8,6 +8,7 @@ from django.template import loader
 from django.utils.encoding import *
 from catdb.models import *
 from forms import *
+from DatabaseHelpers import CatDbHelper
 import time
 import datetime
 from API import *	
@@ -110,12 +111,13 @@ def catview(request):
 	if(len(c) != 1):
 		context = {}
 	else:
+		data = CatDbHelper.getCatInfo(c[0])
 		n = neutered.objects.filter(catId = c[0])
 		if(not n.exists()):
 			n = None
 		context ={
 				'cat'  : c[0],
-				'isNeutered': n != None,
+				'data': data,
 				'neuterData' : n
 			}
 

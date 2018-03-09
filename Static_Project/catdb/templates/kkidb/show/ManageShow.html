@@ -10,36 +10,43 @@
 </head>
 <body>
     <p id="showID" style="display:none;">{{show.id}}</p>
-    <h2>{{show.name}}</h2>
+    <h2 class="title">{{show.name}}</h2>
 
     <div id="message"></div>
-    <div id="catList">lol</div>
-    <form id="addJudgement" action="POST">
-        <h2>Enter Show Judgement</h2>
-        {% for field in judgementAddForm %}
-        <p>{{field.label_tag}}</p>{{field}}<br />
-        {% endfor %}
-        {% csrf_token %}
-        <input type="submit"></input>col
-    </form>
+    <div id="forms">
 
-    <form id="addColor" action="POST">
-        <h2>Enter Color Judgement</h2>
-        {% for field in colorAddForm %}
-        <p>{{field.label_tag}}</p>{{field}}<br />
-        {% endfor %}
-        {% csrf_token %}
-        <input type="submit"></input>
-    </form>
+        <form class ="form" id="addColor" action="POST">
+            <h2>Enter Color Judgement</h2>
+            {% for field in colorAddForm %}
+            <p>{{field.label_tag}}</p>{{field}}<br />
+            {% if  field.html_name  == "colEntryCatId" %}
+            <button type="button" id="getColorCatInformation_id">Search</button>
+            {%endif%}
+            {% endfor %}
+            {% csrf_token %}
+            <input type="submit">
+        </form>
 
-    <form id="litterJudgement" action="POST">
-        <h2>Enter Litter Judgement</h2>
-        {% for field in litterJudgement %}
-        <p>{{field.label_tag}}</p>{{field}}<br />
-        {% endfor %}
-        {% csrf_token %}
-        <input type="submit"></input>
-    </form>
+        <form class="form" id="addJudgement" action="POST">
+            <h2>Enter Show Judgement</h2>
+            {% for field in judgementAddForm %}
+            <p>{{field.label_tag}}</p>{{field}}<br />
+            {% if  field.html_name  == "entryCatId" %}
+            <button type="button" id="getCatInformation_id">Search</button>
+            {%endif%}
+            {% endfor %}
+            {% csrf_token %}
+            <button type="button" id="submitJudgement_id">Submit</button>
+        </form>
+        <form class ="form" id="litterJudgement" action="POST">
+            <h2>Enter Litter Judgement</h2>
+            {% for field in litterJudgement %}
+            <p>{{field.label_tag}}</p>{{field}}<br />
+            {% endfor %}
+            {% csrf_token %}
+            <input type="submit"></input>
+        </form>
+    </div>
 </body>
 </html>
 
@@ -82,49 +89,16 @@
                 return foundName;
             }
         };
-        
-        // Cat entry change stuff
-        $("input[name = 'cat']").on('input', function () {
-            var val = $("input[name = 'cat']").val();
-            if (val.length == 3) {
-                FORM.nameList['cat'] = [];
-                getCatNames(val, 'sire');
-                getCatNames(val, 'dam');
-            }
-            else {
-                FORM.update_message(FORM.finalList(val,'cat'));
-            }
-        });
-        // Judge entry change stuff
-        $("input[name = 'judge']").on('input', function () {
-            var val = $("input[name = 'judge']").val();
-            if (val.length == 3) {
-                FORM.nameList['judge'] = [];
-                getJudgeNames(val);
-            }
-            else {
-                FORM.update_message(FORM.finalList(val, 'judge'));
-            }
-        });
-        // Litter entry change stuff
-        $("input[name = 'litterCat']").on('input', function () {
-            var val = $("input[name = 'litterCat']").val();
-            if (val.length == 3) {
-                FORM.nameList['litter'] = [];
-                getEntryNames(val);
-            }
-            else {
-                FORM.update_message(FORM.finalList(val, 'litter'));
-            }
-        });
 
-        $("#id_entryCatId").on('input', function () {
+        $("#getCatInformation_id").on('click', function () {
             var val = $("#id_entryCatId").val();
             getEntryInfo(val,false);
         });
-        $("#id_colEntryCatId").on('input', function () {
+        $("#getColorCatInformation_id").on('click', function (e) {
+            e.preventDefault();
             var val = $("#id_colEntryCatId").val();
             getEntryInfo(val, true);
+            return false;
         });
         function getCatNames(name, type) {
             D = { 'name': name, 'gender': type }
@@ -230,7 +204,7 @@
 
 <script>
 //Submit scripts
-    $("#addJudgement").submit(function (event) {
+    $("#submitJudgement_id").on('click',function (event) {
         event.preventDefault();
 
         var form = $("#addJudgement")[0];
@@ -355,3 +329,19 @@
     });
 
 </script>
+
+<style>
+    #forms{
+        width:100%;
+    }
+    .form {
+        width: 400px;
+        margin-left: 13px;
+        margin-right: 13px;
+        display: inline-block;
+        float:left;
+    }
+    .title{
+        text-align:center;
+    }
+</style>
