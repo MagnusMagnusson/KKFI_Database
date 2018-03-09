@@ -102,7 +102,7 @@ class show(models.Model):
 
 class show_entry(models.Model):   
 	class Meta:
-		unique_together = (('showId', 'catId'),)
+		unique_together = (('showId', 'catId'))
 	id = models.AutoField(primary_key = True)
 	showId =  models.ForeignKey('show',on_delete = models.CASCADE)
 	catId = models.ForeignKey('cat',on_delete = models.CASCADE) 
@@ -117,7 +117,8 @@ class judge(models.Model):
 	name = models.CharField(max_length = 50)
 	country = models.CharField(max_length = 3)
 	def __str__(self) :
-		return self.name + " ["+self.country+"]"
+		s = self.name + " ["+self.country+"]"
+		return s.encode('utf8')
 
 class judge_show(models.Model):
 	class Meta:
@@ -135,12 +136,14 @@ class category(models.Model):
 	name = models.CharField(max_length = 10)
 
 class judgement(models.Model):
+	class Meta:
+		unique_together = (('entryId', 'showId'))
 	id = models.AutoField(primary_key = True)
 	entryId = models.ForeignKey('show_entry',on_delete = models.PROTECT)
 	showId = models.ForeignKey('show',on_delete = models.PROTECT)
 	judge = models.ForeignKey('judge',on_delete = models.PROTECT)
 	attendence = models.BooleanField()
-	ex = models.IntegerField()
+	ex = models.CharField(max_length = 3, null = True)
 	cert = models.BooleanField()
 	biv = models.BooleanField()
 	nom = models.BooleanField()
@@ -155,6 +158,10 @@ class cert(models.Model):
 	predecessor = models.ForeignKey('cert',on_delete = models.PROTECT,null = True)
 	neutered = models.BooleanField()
 	title = models.ForeignKey('titles',on_delete = models.PROTECT,null = True)
+	def __str__(self) :
+		s = self.certName + str(self.certRank)
+		return s.encode('utf8')
+
 
 class judgementLitter(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -178,9 +185,14 @@ class reward(models.Model):
 	name = models.CharField(max_length = 30)
 	description = models.CharField(max_length = 1024)
 
-class judgement_reward(models.Model):
+class reward_nominations(models.Model):
+	id = models.AutoField(primary_key = True)
 	award = models.ForeignKey('reward',on_delete = models.PROTECT)
-	judgement = models.ForeignKey('judgement',on_delete = models.PROTECT)
+	show_entry = models.ForeignKey('show_entry',on_delete = models.PROTECT)
+
+class rewards(models.Model):
+	id = models.AutoField(primary_key = True)
+	nomination = models.ForeignKey('reward_nominations',on_delete = models.PROTECT)
 
 class titles(models.Model):
 	id = models.IntegerField(primary_key = True)

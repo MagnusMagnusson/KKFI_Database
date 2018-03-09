@@ -8,6 +8,7 @@ from django.template import loader
 from django.utils.encoding import *
 from catdb.models import *
 from forms import *
+from DatabaseHelpers import CatDbHelper
 import time
 import datetime
 from API import *	
@@ -110,16 +111,70 @@ def catview(request):
 	if(len(c) != 1):
 		context = {}
 	else:
+		data = CatDbHelper.getCatInfo(c[0])
 		n = neutered.objects.filter(catId = c[0])
 		if(not n.exists()):
 			n = None
 		context ={
 				'cat'  : c[0],
-				'isNeutered': n != None,
+				'data': data,
 				'neuterData' : n
 			}
 
 	return HttpResponse(template.render(context, request))
+
+def editCat(request):
+	regnr = request.GET['id']
+	c = cat.objects.get(reg_nr = regnr)
+	n = neutered.objects.filter(catId = c)
+	neuter = False 
+	neutered_date = None
+	if(len(n) == 1):
+		neuter = True
+		neutered_date = n[0].date
+
+	micro = None	
+	m = microchip.objects.filter(cat = c)
+	if(len(m) > 0):
+		m = m.latest('id')
+		micro = m.microchip_nr
+	color = ""
+	ems = cat_EMS.objects.filter(cat = c)
+	if(ems > 0):
+		ems = ems.latest('reg_date')
+		color = ems.ems.breed + " " + ems.ems.ems
+
+	certificate = None 
+	NeuterCertificate = None
+	cert = cert_judgement.objects.filter(cat = c, cert__neutered = False)
+	if(len(cert) > 0):
+		certificate = cert.latest('date').cert
+	Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
+	if(len(Ncert) > 0):
+		NeuterCertificate = cert.latest('date').cert
+	form = AddCat(initial={
+			'name':c.name,
+			'gender':not c.gender,
+			'birth':c.birth,
+			'registered':c.registered,
+			'sire':c.sire.cat.reg_nr,
+			'dam':c.dam.cat.reg_nr,
+			'reg_nr':c.reg_nr,
+			'neutered':neuter,
+			'neutered_Date':neutered_date,
+			'microchip' : micro,
+			'color' : color,
+			'certificate' : certificate,
+			'neutered_certificate' : NeuterCertificate
+		})
+	template = loader.get_template('kkidb/cat/EditCat.html')
+
+	context = {
+		'form': form
+		}
+
+	return HttpResponse(template.render(context, request))
+
 
 def addcat(request):
 	form = AddCat()
@@ -129,7 +184,6 @@ def addcat(request):
 		}
 
 	return HttpResponse(template.render(context, request))
-
 
 def findshow(request):
 	s = show.objects.all()
@@ -192,6 +246,62 @@ def view_ShowManage(request):
 		}
 	return HttpResponse(template.render(context,request))
 
+def view_ShowJudgements(request):
+	j = judgement.objects.filter(showId_id = request.GET['show']).order_by('entryId__cat_show_number')
+
+	template = loader.get_template('kkidb/show/ShowJudgements.html')
+	if(len(j) > 0):
+		context = {
+			'Judgements': j,
+		}
+	else:
+		context = {
+		}
+	return HttpResponse(template.render(context, request))
+
+def view_DeleteJudgements(request):
+	j = judgement.objects.filter(id = request.GET['id'])
+	c =  cert_judgement.objects.filter(judgement = j)
+	S = None
+
+	if(len(c) == 1):
+		c[0].delete()	
+	if(len(j) == 1):
+		S = j[0].showId
+		j[0].delete()	
+	
+		
+	js = judgement.objects.filter(showId = S)
+	template = loader.get_template('kkidb/show/ShowJudgements.html')
+	if(len(j) > 0):
+		context = {
+			'Judgements': js,
+		}
+	else:
+		context = {
+		}
+	return HttpResponse(template.render(context, request))
+
+def view_EditJudgements(request):
+	j = judgement.objects.get(id = request.GET['id'])
+	judgementEditForm = form_show_judgement_enter(show_id = j.showId_id,
+											   initial={
+												   'entryCatId':j.entryId_id,
+												   'abs': not j.attendence,
+												   'judge': j.judge,
+												   'ex' : j.ex,
+												   'cert' : j.cert,
+												   'biv' : j.biv,
+												   'nom' : j.nom,
+												   'comment' : j.comment
+												   })
+	template = loader.get_template('kkidb/show/EditJudgement.html')
+	context = {
+		'judgementEditForm':judgementEditForm,
+		'Judgement': j,
+		'show': j.showId
+	}
+	return HttpResponse(template.render(context, request))
 
 def view_ShowNominations(request):
 
@@ -204,22 +314,22 @@ def view_ShowNominations(request):
 	writer.writerow(['Entry Number', 'Judge'])
 	writer.writerow(['Younglings'])
 	for x in D['Younglings']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Kitten'])
 	for x in D['Kittens']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Male'])
 	for x in D['Males']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Female'])
 	for x in D['Females']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Neutered Males'])
 	for x in D['nMales']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 	writer.writerow(['Neutered Females'])
 	for x in D['nFemales']:
-		writer.writerow([x.entryId_id,x.judge_id])
+		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
 
 	return response
 

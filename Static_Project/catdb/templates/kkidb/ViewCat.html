@@ -25,13 +25,16 @@
         <p>Gender: Male</p>
     {% endif %}
     <p>Registered on: {{cat.registered}}</p>
-    {%if isNeutered %}
-    <p><<i>Cat was neutered on {{neuterData.date}}</i></p>
+    {%if data.neutered %}
+    <p><<i>Cat was neutered on {{data.neutered_Date}}</i></p>
     {%else%}
     <p> <i>Cat is not neutered.</i></p>
     {%endif%}
+    <p>Color : {{data.color}}</p>
     <p>Sire:<a href = "../cat?view={{cat.sire.cat.id}}">{{cat.sire.cat.name}}</a></p>
     <p>Dam:<a href = "../cat?view={{cat.dam.cat.id}}">{{cat.dam.cat.name}}</a></p>
+    <p>Championship certificate : {{data.certificate}}</p>
+    <p>Premier certificate : {{data.neutered_certificate}}</p>
 
 
 

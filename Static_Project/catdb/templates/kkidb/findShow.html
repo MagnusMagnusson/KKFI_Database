@@ -14,19 +14,21 @@
         <table>
             <thead>
                 <tr>
-                <th>ID</th>
                 <th>Show</th>               
-                <th>Date</th>               
+                <th>Date</th>     
                 <th>Orginizer</th>
+                <th></th>
+                <th></th>
                 </tr>
             </thead>
             <tbody>
         {% for show in shows %}
             <tr>
-            <td><a href = "manage?show={{show.id}}">{{show.id}}</a></td>
             <td>{{show.name}}</td>
             <td>{{show.date}}</td>
             <td>{{show.show_orginizer}}</td>
+            <td><a href="setup/?show={{show.id}}">Setup</a></td>
+            <td><a href="manage/?show={{show.id}}">Manage</a></td>
             </tr>
         {% endfor %}
         </tbody>

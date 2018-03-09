@@ -1,6 +1,7 @@
 from django import forms 
 from catdb.models import judge
 from catdb.models import litter
+from catdb.models import cert
 import datetime
 from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import extras
@@ -68,10 +69,10 @@ class AddCat(forms.Form):
 		widget = forms.RadioSelect,
 		choices = genderChoices
 		)
-	birth = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
-	registered = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
+	birth = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
+	registered = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
 	neutered = forms.BooleanField(required = False)
-	neutered_Date = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-10,-1)))
+	neutered_Date = forms.DateField(required = False, widget=extras.SelectDateWidget(years=range( now.year,now.year-25,-1)))
 	sire = forms.CharField(
 		label = "sire",
 		max_length = 30,
@@ -82,11 +83,20 @@ class AddCat(forms.Form):
 		max_length = 30, 
 		required = False
 		)
+
 	microchip = forms.CharField(
 		label = "chip",
 		required = False,
 		max_length = 30
 		)
+
+	color = forms.CharField(
+		max_length = 10,
+		required = False)
+	
+	certificate = forms.ModelChoiceField(required = False,queryset = cert.objects.filter(neutered = False))
+	neutered_certificate = forms.ModelChoiceField(required = False, queryset = cert.objects.filter(neutered = True))
+
 
 class form_add_show(forms.Form):
 	now = datetime.datetime.now()
@@ -102,6 +112,7 @@ class form_add_show(forms.Form):
 	
 
 class form_show_entry_add(forms.Form):
+	catRegId = forms.IntegerField();
 	cat = forms.CharField(
 		required = True,
 		max_length = 30
@@ -112,10 +123,12 @@ class form_show_judge_add(forms.Form):
 	judge = forms.CharField(max_length = 50)
 
 class form_show_litter_add(forms.Form):
+		litterCatRegId = forms.IntegerField();
 		litterCat = forms.CharField(
 		required = True,
 		max_length = 50
 		)
+
 		litterLetter = forms.CharField(
 		required = True,
 		max_length = 2
@@ -155,7 +168,7 @@ class form_show_judgement_enter(forms.Form):
 		max_length = 10)
 	judge = forms.ModelChoiceField(queryset=None)
 	abs = forms.BooleanField(initial = False, required = False)
-	ex = forms.BooleanField(initial = False, required = False)
+	ex = forms.CharField(max_length = 3, min_length = 3,  required = False)
 	cert = forms.BooleanField(initial = False,  required = False)
 	biv = forms.BooleanField(initial = False,  required = False)
 	nom = forms.BooleanField(initial = False,  required = False)
@@ -163,21 +176,27 @@ class form_show_judgement_enter(forms.Form):
 
 	
 class form_show_color_judgement_enter(forms.Form):
-	entryCatId = forms.CharField(
+	colEntryCatId = forms.CharField(
 		required = True,
 		max_length = 50
 		)		
 		
-	entryCatName = forms.CharField(
+	colEntryCatName = forms.CharField(
 		disabled = True,
 		max_length = 50
 		)
-	color = forms.CharField(
+	colColor = forms.CharField(
 		disabled = True,
 		max_length = 10)
-	neutered = forms.BooleanField(disabled = True)
+	colNeutered = forms.BooleanField(disabled = True)
 	new_EMS = forms.CharField(
-		max_length = 10)
+		max_length = 10)	
+	
+	colCatId = forms.CharField(
+		max_length = 50,
+		label="",
+		widget=forms.HiddenInput()
+		)	
 
 
 	

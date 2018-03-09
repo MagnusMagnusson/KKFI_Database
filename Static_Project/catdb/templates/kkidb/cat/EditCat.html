@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        test
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    
+   <h2>Edit cat</h2> 
+<form id="editForm" action="POST">
+    <p>{{nom}}</p>
+    {% for field in form %}
+    <p>{{field.label_tag}}</p>{{field}}<br/>
+    {% endfor %}
+    {% csrf_token %}
+<input type="submit" ></input>
+</form>
+    <div id="message"></div>
+</body>
+</html>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#id_reg_nr")[0].disabled = true
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    });
+
+        $("#editForm").submit(function (event) {
+            event.preventDefault();
+
+            var form = $("#editForm")[0];
+            var D = {};
+            var inputs = form.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+                if (D[inputs[i].name] == "on") {
+                    D[inputs[i].name] = inputs[i].checked;
+                }
+            }
+            var inputs = form.getElementsByTagName('select');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            D['gender'] = $('input[name=gender]:checked').val() == "False";
+            $.ajax({
+                type: "POST",
+                url: "../../api/cats/editCat",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        $('#message').html( "<h2> New Color entered. <\h2>");
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+            return false;
+            });
+
+    
+</script>
