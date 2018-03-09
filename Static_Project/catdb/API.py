@@ -515,7 +515,8 @@ def api_cat_edit(request):
 			if(request.POST['neutered']  == "true"):
 				n = neutered()
 				n.catId = c 
-				n.date = date(request.POST['neutered_Date_year'],request.POST['neutered_Date_month'],request.POST['neutered_Date_day'])
+				n.date = date(int(request.POST['neutered_Date_year']),int(request.POST['neutered_Date_month']),int(request.POST['neutered_Date_day']))
+				n.save()
 			else:
 				n = neutered.objects.get(catID = c)
 				n.delete()

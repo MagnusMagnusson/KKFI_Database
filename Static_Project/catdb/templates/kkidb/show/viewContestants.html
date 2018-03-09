@@ -9,7 +9,7 @@ Entries
 <li><a href="{% url 'view_ShowManage'%}?show={{show.id}}">Add judgements</a></li>
 <li><a href="{% url 'view_ShowJudgements'%}?show={{show.id}}">Edit Judgements</a></li>
 <li><a href="{% url 'view_ShowNominations'%}?show={{show.id}}">Get Nominations</a></li>
-<li><a href="{% url 'view_ShowNominations'%}?show={{show.id}}">Get All Entries</a></li>
+<li><a href="{% url 'view_ShowViewEntries'%}?show={{show.id}}">Get All Entries</a></li>
 {% endblock %}
 
 {%block content%}
@@ -20,8 +20,8 @@ Entries
         <th>Name</th>
         <th>Ems</th>
         <th>Neutered</th>
-        <th>CH Certificate</th>
-        <th>CH Title</th>
+        <th>Ch Certificate</th>
+        <th>Ch Title</th>
         <th>Pr Certificate</th>
         <th>Pr Title</th>
         <th>Edit Cat</th>

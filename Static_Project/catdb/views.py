@@ -151,14 +151,14 @@ def editCat(request):
 		certificate = cert.latest('date').cert
 	Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
 	if(len(Ncert) > 0):
-		NeuterCertificate = cert.latest('date').cert
+		NeuterCertificate = Ncert.latest('date').cert
 	form = AddCat(initial={
 			'name':c.name,
 			'gender':not c.gender,
 			'birth':c.birth,
 			'registered':c.registered,
-			'sire':c.sire.cat.reg_nr,
-			'dam':c.dam.cat.reg_nr,
+			'sire':c.sire.cat.reg_nr if c.sire else "",
+			'dam':c.dam.cat.reg_nr if c.dam else "",
 			'reg_nr':c.reg_nr,
 			'neutered':neuter,
 			'neutered_Date':neutered_date,
@@ -187,7 +187,7 @@ def addcat(request):
 
 def findshow(request):
 	s = show.objects.all()
-	template = loader.get_template('kkidb/findShow.html')
+	template = loader.get_template('kkidb/show/findShow.html')
 	if(len(s) > 0):
 		context = {
 			'shows': s,

@@ -39,7 +39,8 @@ class Command(BaseCommand):
 						N = neutered()
 						N.catId = C[0]
 						N.date = None
-				done += 1
+						N.save()
+						done += 1
 				if((100*done/Length) >= 100*lastpercent):
 					print(str(lastpercent*100) + "% done ("+str(done) + " cats registered)")
 					lastpercent += 0.05

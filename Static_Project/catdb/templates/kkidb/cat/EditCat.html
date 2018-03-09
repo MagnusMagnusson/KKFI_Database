@@ -1,15 +1,10 @@
-﻿<!DOCTYPE html>
+﻿{% extends 'kkidb/shared/master.html' %}
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>
-        test
-    </title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
+{%block title%}
+Edit Cat
+{% endblock%}
     
+{%block content %}
    <h2>Edit cat</h2> 
 <form id="editForm" action="POST">
     <p>{{nom}}</p>
@@ -20,8 +15,10 @@
 <input type="submit" ></input>
 </form>
     <div id="message"></div>
-</body>
-</html>
+{% endblock %}
+
+
+{%block scripts %}
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -59,7 +56,7 @@
             D['gender'] = $('input[name=gender]:checked').val() == "False";
             $.ajax({
                 type: "POST",
-                url: "../../api/cats/editCat",
+                url: "{% url 'api_cat_edit' %}",
                 dataType: 'json',
                 data: D,
                 success: function (d) {
@@ -77,3 +74,11 @@
 
     
 </script>
+
+{% endblock %}
+
+{% block style %}
+form{
+    width:250px;
+}
+{% endblock %}
