@@ -340,34 +340,34 @@ def view_ShowNominations(request):
 	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3 or x.color.ems.category == 4])
 	
 	for c in Cat:				
-		writer.writerow("Category " + str(Cat.index(c)),"-")
+		writer.writerow(["Category " + str(Cat.index(c))])
 		for x in D['Younglings']:
-			writer.writerow("Juniors".encode('utf-8'))
+			writer.writerow(["Juniors".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed + " " + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 		for x in D['Kittens']:
-			writer.writerow("Kittens".encode('utf-8'))
+			writer.writerow(["Kittens".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 		for x in D['Males']:
-			writer.writerow("Males".encode('utf-8'))
+			writer.writerow(["Males".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 		for x in D['Females']:
-			writer.writerow("Females".encode('utf-8'))
+			writer.writerow(["Females".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed + " "+x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 		for x in D['nMales']:
-			writer.writerow("Neutered Males".encode('utf-8'))
+			writer.writerow(["Neutered Males".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 		for x in D['nFemales']:
-			writer.writerow("Neutered Females".encode('utf-8'))
+			writer.writerow(["Neutered Females".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.show_entry_nr,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
