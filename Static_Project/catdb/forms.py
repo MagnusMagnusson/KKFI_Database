@@ -158,7 +158,7 @@ class form_show_judgement_enter(forms.Form):
 		)
 	color = forms.CharField(
 		disabled = True,
-		max_length = 10)
+		max_length = 50)
 	neutered = forms.BooleanField(disabled = True)
 	current_point  = forms.CharField(
 		disabled = True,

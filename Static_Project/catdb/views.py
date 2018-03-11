@@ -289,7 +289,7 @@ def view_EditJudgements(request):
 	j = judgement.objects.get(id = request.GET['id'])
 	judgementEditForm = form_show_judgement_enter(show_id = j.showId_id,
 											   initial={
-												   'entryCatId':j.entryId_id,
+												   'entryCatId':j.entryId.cat_show_number,
 												   'abs': not j.attendence,
 												   'judge': j.judge,
 												   'ex' : j.ex,
