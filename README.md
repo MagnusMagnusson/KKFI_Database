@@ -6,9 +6,14 @@ How to get started:
 - Install Vagrant from https://www.vagrantup.com/
 - Install Virtualbox from https://www.virtualbox.org/
 - Open a terminal cd into the cloned repository and run "vagrant up"
-- When Vagrant up has started the dev machine point your browser to localhost:8080 and the default page is loaded. 
+- When Vagrant up has started the dev machine point your browser to localhost:8080/kkidb and the default page is loaded. 
 
-You can also use ssh to connect to the devbox.
+The installed Debian virtual machine will, when run the first time, download updates, required software and setup the database. This can take a significant time. 
+
+The database operates on Python, Django and Postgresql. 
+
+
+You can also use vagrant ssh to connect to the devbox via port 2222.
 
 Manual to be written. 
 
