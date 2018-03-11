@@ -335,10 +335,9 @@ def view_ShowNominations(request):
 	writer = csv.writer(response)
 	writer.writerow(['Entry Number','EMS','Category', 'Judge','Age Group'])
 	Cat = []
-	Cat[1] = [x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 1]
-	Cat[2] = [x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 2]
-	Cat[3] = [x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3]
-	Cat[4] = [x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 4]
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 1])
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 2])
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3 or x.color.ems.category == 4])
 	
 	for c in Cat:				
 		writer.writerow("Category " + Cat.index(c))
