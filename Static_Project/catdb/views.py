@@ -339,34 +339,42 @@ def view_ShowNominations(request):
 	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 2])
 	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3 or x.color.ems.category == 4])
 	
-	for c in Cat:				
-		writer.writerow(["Category " + str(Cat.index(c))])
-		writer.writerow(["Juniors".encode('utf-8')])
+	for c in Cat:
+		writer.writerow([" "])
+		writer.writerow([" "])				
+		writer.writerow(["Category " + str(1 + Cat.index(c))])
+		writer.writerow([" "])
+		writer.writerow(["","Juniors".encode('utf-8')])
 		for x in D['Younglings']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " " + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
-
-		writer.writerow(["Kittens".encode('utf-8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Kittens".encode('utf-8')])
 		for x in D['Kittens']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
-		writer.writerow(["Males".encode('utf-8')])
+		writer.writerow([" "])
+		writer.writerow(["","Males".encode('utf-8')])
 		for x in D['Males']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
-
-		writer.writerow(["Females".encode('utf-8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Females".encode('utf-8')])
 		for x in D['Females']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
-
-		writer.writerow(["Neutered Males".encode('utf-8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Neutered Males".encode('utf-8')])
 		for x in D['nMales']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
-				
-		writer.writerow(["Neutered Females".encode('utf-8')])
+			
+		writer.writerow([" "])	
+		writer.writerow(["","Neutered Females".encode('utf-8')])
 		for x in D['nFemales']:
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
