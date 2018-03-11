@@ -461,11 +461,12 @@ def api_show_edit_judgement(request):
 		D = {
 			'success': True,
 			'Judgement' : _judgement.id,
-			'Certificate' : _cert.id if _cert else None,
+			'Certificate' : _cert[0].id if len(_cert)>0 else None,
 			'newTitle' : _newTitle != None,
 			'newTitleName' : _newTitle
 			}
-
+		
+		return JsonResponse(D)
 	except Exception as ex:
 		D = {
 			'success':False,
@@ -515,7 +516,8 @@ def api_cat_edit(request):
 			if(request.POST['neutered']  == "true"):
 				n = neutered()
 				n.catId = c 
-				n.date = date(request.POST['neutered_Date_year'],request.POST['neutered_Date_month'],request.POST['neutered_Date_day'])
+				n.date = date(int(request.POST['neutered_Date_year']),int(request.POST['neutered_Date_month']),int(request.POST['neutered_Date_day']))
+				n.save()
 			else:
 				n = neutered.objects.get(catID = c)
 				n.delete()

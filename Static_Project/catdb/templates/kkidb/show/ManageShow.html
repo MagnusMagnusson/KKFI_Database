@@ -1,14 +1,20 @@
-﻿<!DOCTYPE html>
+﻿{% extends 'kkidb/shared/master.html' %}
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>
-        test
-    </title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
+{% block title%}
+Manage show
+{% endblock %}
+
+{%block navigation%}
+
+<li><a href="{% url 'view_ShowSetup'%}?show={{show.id}}" >Setup Show</a></li>
+<li><a href="{% url 'view_ShowManage'%}?show={{show.id}}" >Add judgements</a></li>
+<li><a href="{% url 'view_ShowJudgements'%}?show={{show.id}}" >Edit Judgements</a></li>
+<li><a href="{% url 'view_ShowNominations'%}?show={{show.id}}" >Get Nominations</a></li>
+<li><a href="{% url 'view_ShowViewEntries'%}?show={{show.id}}">Get All Entries</a></li>
+
+{% endblock %}
+
+{% block content %}
     <p id="showID" style="display:none;">{{show.id}}</p>
     <h2 class="title">{{show.name}}</h2>
 
@@ -47,9 +53,9 @@
             <input type="submit"></input>
         </form>
     </div>
-</body>
-</html>
+{% endblock %}
 
+{% block scripts %}
 <script type="text/javascript">
     $(document).ready(function () {
         window.Siteshow = $("#showID").text();
@@ -100,78 +106,12 @@
             getEntryInfo(val, true);
             return false;
         });
-        function getCatNames(name, type) {
-            D = { 'name': name, 'gender': type }
-            $.ajax({
-                type: "GET",
-                url: "../../find_cat_name/",
-                dataType: 'json',
-                data: D,
-                success: function (d) {
-                    if (d.success) {
-                        for(let c of d.cats) {
-                            FORM.nameList['cat'].push(c);
-                        }
-                        FORM.update_message(FORM.nameList['cat']);
-                    }
-                    else {
-                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                    }
-
-                }
-            });
-        }
-
-        function getJudgeNames(name) {
-            D = { 'name': name }
-            $.ajax({
-                type: "GET",
-                url: "../../api/judge/find_judge_name",
-                dataType: 'json',
-                data: D,
-                success: function (d) {
-                    if (d.success) {
-                        for(let j of d.judges) {
-                            j.name = j.name + " [ " + j.country + " ]";
-                            FORM.nameList['judge'].push(j);
-                        }
-                        FORM.update_message(FORM.nameList['judge']);
-                    }
-                    else {
-                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                    }
-
-                }
-            });
-        }
-
-        function getEntryNames(name) {
-            D = { 'name': name, 'show' : Siteshow }
-            $.ajax({
-                type: "GET",
-                url: "../../api/shows/find_entry_name",
-                dataType: 'json',
-                data: D,
-                success: function (d) {
-                    if (d.success) {
-                        for(let j of d.kitties) {
-                            FORM.nameList['litter'].push(j);
-                        }
-                        FORM.update_message(FORM.nameList['litter']);
-                    }
-                    else {
-                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
-                    }
-
-                }
-            });
-        }
 
         function getEntryInfo(ID,color) {
             D = { 'entry': ID, 'show': Siteshow }
             $.ajax({
                 type: "GET",
-                url: "../../api/shows/getEntryInfo",
+                url: "{% url 'api_entry_get_info' %}",
                 dataType: 'json',
                 data: D,
                 success: function (d) {
@@ -226,7 +166,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "../../api/shows/enterJudgement",
+            url: "{% url 'api_show_enter_judgement' %}",
             dataType: 'json',
             data: D,
             success: function (d) {
@@ -269,7 +209,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "../../api/shows/enterColorJudgement",
+            url: "{% url 'api_show_enter_color_judgement' %}",
             dataType: 'json',
             data: D,
             success: function (d) {
@@ -308,7 +248,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "../../api/shows/enterLitterJudgement",
+            url: "{% url 'api_show_enter_litter_judgement' %}",
             dataType: 'json',
             data: D,
             success: function (d) {
@@ -329,8 +269,9 @@
     });
 
 </script>
+{% endblock %}
 
-<style>
+{% block style %}
     #forms{
         width:100%;
     }
@@ -344,4 +285,9 @@
     .title{
         text-align:center;
     }
-</style>
+
+    form{
+        position:inherit;
+        left: inherit;
+    }
+{% endblock %}

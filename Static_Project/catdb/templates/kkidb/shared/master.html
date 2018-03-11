@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>  
+        {% block title %}
+        Kynjakattafélag Íslands
+        {% endblock %}
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class ="navigation" id="upperNavigation">
+        <ul>
+            <li><a href="{% url 'search' %}">Cat Search</a></li>
+            <li><a href="{% url 'findshow' %}">Shows</a></li>
+        </ul>
+    </div>
+    <div class ="navigation"  id="lowerNavigation">
+        <ul>
+            {% block navigation %}
+            {% endblock %}
+        </ul>
+    </div>
+    <div id="contentWrapper">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
+{% block scripts %}
+{% endblock %}
+
+<style>
+    #contentWrapper{
+        position:absolute;
+        top:64px;
+        margin-top:5px;
+    }
+    .navigation {
+        width: 100%;
+        height: 32px;
+        top:0px;
+        position: absolute;
+        background-color: darkslategrey;
+    }
+
+    #lowerNavigation {
+        top:32px;
+        background-color: dimgray;
+        margin-bottom:32px;
+    }
+
+    .navigation ul li a {
+        color: white;
+    }
+
+    .navigation ul li {
+        float: left;
+        margin-left: 64px;
+    }
+
+    .navigation ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    form {
+        position: absolute;
+        left: 640px;
+    }
+    {%block style%}
+
+    {% endblock %}
+</style>

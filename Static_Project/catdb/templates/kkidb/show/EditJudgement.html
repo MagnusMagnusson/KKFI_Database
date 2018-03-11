@@ -1,43 +1,24 @@
-﻿<!DOCTYPE html>
+﻿{% extends 'kkidb/shared/master.html' %}
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>
-        test
-    </title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
+{%block title%}
+Edit Judgement
+{% endblock%}
+
+{%block navigation%}
+
+<li><a href="{% url 'view_ShowSetup'%}?show={{show.id}}">Setup Show</a></li>
+<li><a href="{% url 'view_ShowManage'%}?show={{show.id}}">Add judgements</a></li>
+<li><a href="{% url 'view_ShowJudgements'%}?show={{show.id}}">Edit Judgements</a></li>
+<li><a href="{% url 'view_ShowNominations'%}?show={{show.id}}">Get Nominations</a></li>
+<li><a href="{% url 'view_ShowViewEntries'%}?show={{show.id}}">Get All Entries</a></li>
+
+{% endblock %}
+
+{%block content%}
     <p id="showID" style="display:none;">{{show.id}}</p>
-    <table style="width:100%">
-        <tr>
-            <th>Show</th>
-            <th>Entry Number</th>
-            <th>Judge</th>
-            <th>Attended</th>
-            <th>Excellent</th>
-            <th>Certificate</th>
-            <th>BIV</th>
-            <th>NOM</th>
-            <th>EMS</th>
-        </tr>
-        <tr>
-            <th> {{show.name}}</th>
-            <th> {{Judgement.entryId.cat_show_number}}</th>
-            <th>{{Judgement.judge.name}}</th>
-            <th>{{Judgement.attendence}}</th>
-            <th>{{Judgement.ex}}</th>
-            <th>{{Judgement.cert}}</th>
-            <th>{{Judgement.biv}}</th>
-            <th>{{Judgement.nom}}</th>
-            <th>{{Judgement.color.ems.breed}} {{Judgement.color.ems.ems}}</th>
-        </tr>
-    </table>
     <p id="judgementId" style="display:none;">{{Judgement.id}}</p>
 
     <div id="message"></div>
-    <div id="catList">lol</div>
     <form id="editJudgement" action="POST">
         <h2>Enter Show Judgement</h2>
         {% for field in judgementEditForm %}
@@ -46,10 +27,9 @@
         {% csrf_token %}
         <input type="submit"></input>col
     </form>
+{%endblock%}
 
-</body>
-</html>
-
+{%block scripts%}
 <script type="text/javascript">
     $(document).ready(function () {
         window.Siteshow = $("#showID").text();
@@ -69,11 +49,11 @@
             }
         });
         
-        function getEntryInfo(ID,color) {
+        function getEntryInfo(ID, color) {
             D = { 'entry': ID, 'show': Siteshow }
             $.ajax({
                 type: "GET",
-                url: "../../api/shows/getEntryInfo",
+                url: "{% url 'api_entry_get_info' %}",
                 dataType: 'json',
                 data: D,
                 success: function (d) {
@@ -102,9 +82,8 @@
             });
         }
     })
-</script>
 
-<script>
+
 //Submit scripts
     $("#editJudgement").submit(function (event) {
         event.preventDefault();
@@ -132,7 +111,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "../../api/shows/editJudgement",
+            url: "{% url 'api_show_edit_judgement' %}",
             dataType: 'json',
             data: D,
             success: function (d) {
@@ -153,3 +132,4 @@
     });
 
 </script>
+{%endblock%}

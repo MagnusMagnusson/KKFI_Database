@@ -125,7 +125,7 @@ class CatDbHelper():
 		D['Females'] = _NonneuterFemale
 		D['nMales'] = _neuterMale
 		D['nFemales'] = _neuterFemale
-
+		D['Everyone'] = _allCats
 		return D
 
 

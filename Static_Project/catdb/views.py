@@ -151,14 +151,14 @@ def editCat(request):
 		certificate = cert.latest('date').cert
 	Ncert = cert_judgement.objects.filter(cat = c, cert__neutered = True)
 	if(len(Ncert) > 0):
-		NeuterCertificate = cert.latest('date').cert
+		NeuterCertificate = Ncert.latest('date').cert
 	form = AddCat(initial={
 			'name':c.name,
 			'gender':not c.gender,
 			'birth':c.birth,
 			'registered':c.registered,
-			'sire':c.sire.cat.reg_nr,
-			'dam':c.dam.cat.reg_nr,
+			'sire':c.sire.cat.reg_nr if c.sire else "",
+			'dam':c.dam.cat.reg_nr if c.dam else "",
 			'reg_nr':c.reg_nr,
 			'neutered':neuter,
 			'neutered_Date':neutered_date,
@@ -187,7 +187,7 @@ def addcat(request):
 
 def findshow(request):
 	s = show.objects.all()
-	template = loader.get_template('kkidb/findShow.html')
+	template = loader.get_template('kkidb/show/findShow.html')
 	if(len(s) > 0):
 		context = {
 			'shows': s,
@@ -248,11 +248,14 @@ def view_ShowManage(request):
 
 def view_ShowJudgements(request):
 	j = judgement.objects.filter(showId_id = request.GET['show']).order_by('entryId__cat_show_number')
+	if(request.GET.get('idOrder') != None):
+		j.order_by('id')
 
 	template = loader.get_template('kkidb/show/ShowJudgements.html')
 	if(len(j) > 0):
 		context = {
 			'Judgements': j,
+			'showId' : request.GET['show']
 		}
 	else:
 		context = {
@@ -286,7 +289,7 @@ def view_EditJudgements(request):
 	j = judgement.objects.get(id = request.GET['id'])
 	judgementEditForm = form_show_judgement_enter(show_id = j.showId_id,
 											   initial={
-												   'entryCatId':j.entryId_id,
+												   'entryCatId':j.entryId.cat_show_number,
 												   'abs': not j.attendence,
 												   'judge': j.judge,
 												   'ex' : j.ex,
@@ -303,35 +306,82 @@ def view_EditJudgements(request):
 	}
 	return HttpResponse(template.render(context, request))
 
+def view_ShowViewEntries(request):
+	
+	template = loader.get_template('kkidb/show/viewContestants.html')
+	_showid = request.GET['show']
+	_show = show.objects.get(id = _showid)
+	_cats = show_entry.objects.filter(showId = _show)
+	returnList = []
+	for c in _cats :
+		D = CatDbHelper.getCatInfo(c.catId)
+		D['cat_show_number'] = c.cat_show_number
+		returnList.append(D)
+	context = {
+		 'show':_show,
+		 'cats':returnList
+		}
+	return HttpResponse(template.render(context, request))
+
+
+
 def view_ShowNominations(request):
 
     # Create the HttpResponse object with the appropriate CSV header.
 	D = CatDbHelper.getNominations(int(request.GET['show']))
 	response = HttpResponse(content_type='text/csv')
-	response['Content-Disposition'] = 'attachment; filename="TestingFile.csv"'
+	response['Content-Disposition'] = 'attachment; filename="Nominations.csv"'
 
 	writer = csv.writer(response)
-	writer.writerow(['Entry Number', 'Judge'])
-	writer.writerow(['Younglings'])
-	for x in D['Younglings']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Kitten'])
-	for x in D['Kittens']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Male'])
-	for x in D['Males']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Female'])
-	for x in D['Females']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Neutered Males'])
-	for x in D['nMales']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Neutered Females'])
-	for x in D['nFemales']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
+	writer.writerow(['Entry Number','EMS','Category', 'Judge','Age Group'])
+	Cat = []
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 1])
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 2])
+	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3 or x.color.ems.category == 4])
+	
+	for c in Cat:
+		writer.writerow([" "])
+		writer.writerow([" "])				
+		writer.writerow(["Category " + str(1 + Cat.index(c))])
+		writer.writerow([" "])
+		writer.writerow(["","Juniors".encode('utf-8')])
+		for x in D['Younglings']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " " + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Kittens".encode('utf-8')])
+		for x in D['Kittens']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
+
+		writer.writerow([" "])
+		writer.writerow(["","Males".encode('utf-8')])
+		for x in D['Males']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Females".encode('utf-8')])
+		for x in D['Females']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
+				
+		writer.writerow([" "])
+		writer.writerow(["","Neutered Males".encode('utf-8')])
+		for x in D['nMales']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
+			
+		writer.writerow([" "])	
+		writer.writerow(["","Neutered Females".encode('utf-8')])
+		for x in D['nFemales']:
+			if(x.entryId.catId.reg_nr in c):
+				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
 	return response
+
+ 
 
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')

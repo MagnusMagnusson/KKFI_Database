@@ -1,0 +1,51 @@
+﻿{% extends 'kkidb/shared/master.html' %}
+{% block title %}
+Entries
+{% endblock %}
+
+{%block navigation%}
+
+<li><a href="{% url 'view_ShowSetup'%}?show={{show.id}}">Setup Show</a></li>
+<li><a href="{% url 'view_ShowManage'%}?show={{show.id}}">Add judgements</a></li>
+<li><a href="{% url 'view_ShowJudgements'%}?show={{show.id}}">Edit Judgements</a></li>
+<li><a href="{% url 'view_ShowNominations'%}?show={{show.id}}">Get Nominations</a></li>
+<li><a href="{% url 'view_ShowViewEntries'%}?show={{show.id}}">Get All Entries</a></li>
+{% endblock %}
+
+{%block content%}
+<table border="1" style="width:100%">
+    <tr>
+        <th>Entry Nr</th>
+        <th>Reg nr</th>
+        <th>Name</th>
+        <th>Ems</th>
+        <th>Neutered</th>
+        <th>Ch Certificate</th>
+        <th>Ch Title</th>
+        <th>Pr Certificate</th>
+        <th>Pr Title</th>
+        <th>Edit Cat</th>
+    </tr>    
+    {%for cat in cats%}
+    <tr>
+        <td><p>{{cat.cat_show_number}}</p></td>
+        <td><p>{{cat.reg_nr}}</p></td>
+        <td><p>{{cat.name}}</p></td>
+        <td><p>{{cat.color}}</p></td>
+        <td><p>{{cat.neutered}}</p></td>
+        <td><p>{{cat.certificate}}</p></td>
+        <td><p>{{cat.certificate.title.name}}</p></td>
+        <td><p>{{cat.neutered_certificate}}</p></td>
+        <td><p>{{cat.neutered_certificate.title.name}}</p></td>
+        <td><a href = "{%url 'editCat'%}?id={{cat.reg_nr}}">Edit</a></td>
+    </tr>  
+    {% endfor %}
+    </table>
+{% endblock %}
+
+{%block style %}
+tr th{
+    padding-left:24px;
+}
+
+{% endblock %}

@@ -18,7 +18,8 @@ urlpatterns = [
     url(r'^shows/judgements/?$', views.view_ShowJudgements, name='view_ShowJudgements'),
     url(r'^shows/nominations/view/?$', views.view_ShowNominations, name='view_ShowNominations'),
     url(r'^shows/nominations/cvs/?$', views.view_ShowNominations, name='view_ShowNominations'),
-    url(r'^shows/?$', views.findshow, name='findshow'),
+    url(r'^shows/contestants/?$', views.view_ShowViewEntries, name='view_ShowViewEntries'),
+	url(r'^shows/?$', views.findshow, name='findshow'),
 
 	#JSON REQUESTS
 	url(r'^api/create_show', views.api_create_show, name='api_create_show'),
