@@ -340,7 +340,7 @@ def view_ShowNominations(request):
 	Cat.append([x.entryId.catId.reg_nr for x in D['Everyone'] if x.color.ems.category == 3 or x.color.ems.category == 4])
 	
 	for c in Cat:				
-		writer.writerow("Category " + Cat.index(c))
+		writer.writerow("Category " + str(Cat.index(c)))
 		for x in D['Younglings']:
 			writer.writerow("Juniors".encode('utf-8'))
 			if(x in c):
