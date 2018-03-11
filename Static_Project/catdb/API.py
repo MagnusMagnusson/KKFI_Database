@@ -461,11 +461,12 @@ def api_show_edit_judgement(request):
 		D = {
 			'success': True,
 			'Judgement' : _judgement.id,
-			'Certificate' : _cert.id if _cert else None,
+			'Certificate' : _cert[0].id if len(_cert)>0 else None,
 			'newTitle' : _newTitle != None,
 			'newTitleName' : _newTitle
 			}
-
+		
+		return JsonResponse(D)
 	except Exception as ex:
 		D = {
 			'success':False,

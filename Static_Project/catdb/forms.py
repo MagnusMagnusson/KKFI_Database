@@ -187,10 +187,10 @@ class form_show_color_judgement_enter(forms.Form):
 		)
 	colColor = forms.CharField(
 		disabled = True,
-		max_length = 10)
+		max_length = 50)
 	colNeutered = forms.BooleanField(disabled = True)
 	new_EMS = forms.CharField(
-		max_length = 10)	
+		max_length = 50)	
 	
 	colCatId = forms.CharField(
 		max_length = 50,

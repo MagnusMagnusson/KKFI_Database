@@ -38,7 +38,6 @@ s
             <th>{{j.nom}}</th>
             <th>{{j.color.ems.breed}} {{j.color.ems.ems}}</th>
             <th><a href="{%url 'view_EditJudgements'%}?id={{j.id}} ">Edit this entry</a></th>
-            <th><a href="{%url 'view_DeleteJudgements'%}?id={{j.id}} ">Delete this entry</a></th>
         </tr>
         {% endfor %}
     </table>

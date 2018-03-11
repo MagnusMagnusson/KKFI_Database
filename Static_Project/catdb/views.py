@@ -248,6 +248,8 @@ def view_ShowManage(request):
 
 def view_ShowJudgements(request):
 	j = judgement.objects.filter(showId_id = request.GET['show']).order_by('entryId__cat_show_number')
+	if(request.GET.get('idOrder') != None):
+		j.order_by('id')
 
 	template = loader.get_template('kkidb/show/ShowJudgements.html')
 	if(len(j) > 0):
@@ -331,25 +333,25 @@ def view_ShowNominations(request):
 	response['Content-Disposition'] = 'attachment; filename="TestingFile.csv"'
 
 	writer = csv.writer(response)
-	writer.writerow(['Entry Number', 'Judge'])
-	writer.writerow(['Younglings'])
+	writer.writerow(['Entry Number','EMS','Category', 'Judge','Age Group'])
+
 	for x in D['Younglings']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Kitten'])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Ungdyr'])
+
 	for x in D['Kittens']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Male'])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Kettlingur'])
+
 	for x in D['Males']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Female'])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Fress'])
+
 	for x in D['Females']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Neutered Males'])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Laeda'])
+
 	for x in D['nMales']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
-	writer.writerow(['Neutered Females'])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Geldur Fress'])
+
 	for x in D['nFemales']:
-		writer.writerow([x.entryId_id,x.judge.name.encode('utf8')])
+		writer.writerow([x.entryId_id,x.color.ems.breed + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8'),'Geld Laeda'])
 
 	return response
 
