@@ -341,33 +341,33 @@ def view_ShowNominations(request):
 	
 	for c in Cat:				
 		writer.writerow(["Category " + str(Cat.index(c))])
+		writer.writerow(["Juniors".encode('utf-8')])
 		for x in D['Younglings']:
-			writer.writerow(["Juniors".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " " + x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
+		writer.writerow(["Kittens".encode('utf-8')])
 		for x in D['Kittens']:
-			writer.writerow(["Kittens".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
+		writer.writerow(["Males".encode('utf-8')])
 		for x in D['Males']:
-			writer.writerow(["Males".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
+		writer.writerow(["Females".encode('utf-8')])
 		for x in D['Females']:
-			writer.writerow(["Females".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed + " "+x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
+		writer.writerow(["Neutered Males".encode('utf-8')])
 		for x in D['nMales']:
-			writer.writerow(["Neutered Males".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
-
+				
+		writer.writerow(["Neutered Females".encode('utf-8')])
 		for x in D['nFemales']:
-			writer.writerow(["Neutered Females".encode('utf-8')])
 			if(x.entryId.catId.reg_nr in c):
 				writer.writerow([x.entryId.cat_show_number,x.color.ems.breed +" "+ x.color.ems.ems,x.color.ems.category,x.judge.name.encode('utf8')])
 
