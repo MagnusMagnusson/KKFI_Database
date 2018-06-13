@@ -10,7 +10,9 @@ Static_project\KKIDB_exports\*
 Static_project\KKIDB_exports\
 Static_project/KKIDB_exports/*
 Static_project/KKIDB_exports/
+
+Static_Project/catdb/migrations/
+Static_Project/catdb/migrations
 ignore/
 ignore\
-ignore/*
-ignore\*
+ignore

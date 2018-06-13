@@ -7,9 +7,11 @@ urlpatterns = [
     url(r'^(index)*$', views.index, name='index'),
 	url(r'^cats/cat/?$',views.catview, name='catview'),
     url(r'^cats/search/?$', views.search, name='search'),
-    url(r'^cats/findcat/?$', views.findcat, name='findcat'),
-    url(r'^cats/addcat/?$', views.addcat, name='addcat'),
+    url(r'^cats/find/?$', views.findcat, name='findcat'),
+    url(r'^cats/register/?$', views.addcat, name='addcat'),
     url(r'^cats/edit/?$', views.editCat, name='editCat'),
+    url(r'^person/register/?$', views.addPerson, name='addPerson'),
+    url(r'^cattery/register/?$', views.addCattery, name='addCattery'),
     url(r'^shows/new/?$', views.addshow, name='addshow'),
     url(r'^shows/setup/?$', views.view_ShowSetup, name='view_ShowSetup'),
     url(r'^shows/manage/?$', views.view_ShowManage, name='view_ShowManage'),
@@ -23,7 +25,8 @@ urlpatterns = [
 
 	#JSON REQUESTS
 	url(r'^api/create_show', views.api_create_show, name='api_create_show'),
-	url(r'^api/cats/editCat', views.api_cat_edit, name='api_cat_edit'),
+	url(r'^api/cats/edit', views.api_cat_edit, name='api_cat_edit'),
+	url(r'^api/cattery/register', views.api_cattery_register, name='api_cattery_register'),
 	url(r'^api/shows/register', views.api_show_entry_register, name='api_show_entry_register'),
 	url(r'^api/shows/find_entry_name', views.api_entry_search_name, name='api_entry_search_name'),
 	url(r'^api/shows/litter_register', views.api_show_litter_entry_register, name='api_show_litter_entry_register'),
@@ -34,6 +37,7 @@ urlpatterns = [
 	url(r'^api/shows/editJudgement', views.api_show_edit_judgement, name='api_show_edit_judgement'),
 	url(r'^api/shows/enterLitterJudgement', views.api_show_enter_litter_judgement, name='api_show_enter_litter_judgement'),
 	url(r'^api/judge/find_judge_name', views.api_judge_search_name, name='api_judge_search_name'),
+	url(r'^api/persons/register', views.api_person_register, name='api_person_register'),
 	url(r'^form_cat', views.form_cat, name='form_cat'),
 	url(r'^find_cat_name', views.find_cat_names, name='find_cat_names'),
     

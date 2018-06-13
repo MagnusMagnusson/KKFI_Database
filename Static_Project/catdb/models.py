@@ -9,12 +9,11 @@ from django.db import models
 class people(models.Model):
 	id = models.AutoField(primary_key = True)
 	name = models.CharField(max_length = 50)
-	id_num = models.CharField(max_length = 30, null = False)
-	ssn = models.CharField(max_length = 10)
+	ssn = models.CharField(max_length = 10, unique = True, null = True)
 	address = models.CharField(max_length = 40)
 	postal = models.CharField(max_length = 3)
-	phone = models.CharField(max_length = 10)
-	member_id = models.IntegerField()
+	phone = models.CharField(max_length = 25)
+	country = models.CharField(max_length = 50)
 	comment = models.CharField(max_length = 144)
 	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL,null=True)
 
@@ -26,7 +25,10 @@ class cat_owners(models.Model):
 
 class cattery(models.Model):
 	id = models.AutoField(primary_key = True)
-	name = models.CharField(max_length = 50)
+	name = models.CharField(max_length = 50, unique = True)
+	prefix = models.BooleanField()
+	def __str__(self) :
+		s = self.name
 
 
 # Cats (part 2)
@@ -42,6 +44,7 @@ class cat(models.Model):
 	comments = models.CharField(max_length = 144)
 	type = models.CharField(max_length = 3)
 	cattery = models.ForeignKey('cattery',on_delete=models.SET_NULL,null=True)
+	org_country = models.CharField(max_length = 3,null = True)
 
 class parents(models.Model):
 	id = models.AutoField(primary_key = True)
@@ -62,7 +65,6 @@ class ghost_cat(models.Model):
 class imp_cat(models.Model):
     id = models.AutoField(primary_key = True)
     cat = models.ForeignKey('cat',on_delete = models.CASCADE)
-    org_country = models.CharField(max_length = 3,null = True)
     org_organization = models.CharField(max_length = 10,null = True)
     org_reg_nr = models.CharField(max_length = 20,null = True)
 
