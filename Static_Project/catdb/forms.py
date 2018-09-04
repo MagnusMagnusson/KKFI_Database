@@ -51,7 +51,6 @@ class SearchCat(forms.Form):
 		required = False
 		)
 
-
 class AddCat(forms.Form):
 	now = datetime.datetime.now()
 	name = forms.CharField(
@@ -97,7 +96,6 @@ class AddCat(forms.Form):
 	certificate = forms.ModelChoiceField(required = False,queryset = cert.objects.filter(neutered = False))
 	neutered_certificate = forms.ModelChoiceField(required = False, queryset = cert.objects.filter(neutered = True))
 
-
 class form_add_show(forms.Form):
 	now = datetime.datetime.now()
 	name = forms.CharField(
@@ -109,7 +107,6 @@ class form_add_show(forms.Form):
 		max_length = 30
 		)
 	date = forms.DateField(required = True, widget=extras.SelectDateWidget(years=range( now.year+2,now.year-2,-1)))
-	
 
 class form_show_entry_add(forms.Form):
 	catRegId = forms.IntegerField();
@@ -174,7 +171,6 @@ class form_show_judgement_enter(forms.Form):
 	nom = forms.BooleanField(initial = False,  required = False)
 	comment = forms.CharField(max_length = 2048,required = False)
 
-	
 class form_show_color_judgement_enter(forms.Form):
 	colEntryCatId = forms.CharField(
 		required = True,
@@ -198,8 +194,6 @@ class form_show_color_judgement_enter(forms.Form):
 		widget=forms.HiddenInput()
 		)	
 
-
-	
 class form_show_judgement_litter_enter(forms.Form):
 	def __init__(self,*args,**kwargs):
 		self.show_id = kwargs.pop('show_id')
@@ -216,3 +210,50 @@ class form_show_judgement_litter_enter(forms.Form):
 	nom = forms.BooleanField(initial = False, required = False)
 	rank = forms.IntegerField()
 	comment = forms.CharField(max_length = 2048,required = False)
+
+class form_humans_add(forms.Form):
+	def __init__(self,*args,**kwargs):
+		super(form_humans_add,self).__init__(*args,**kwargs)
+		self.fields['PersonCattery'].queryset = judge.objects.all()
+
+	PersonName = forms.CharField(
+		max_length = 50
+		)
+	PersonSSN = forms.CharField(
+		max_length = 10,
+		min_length = 10,
+		required = False
+		)
+	PersonAddress = forms.CharField(
+		max_length = 50,
+		required = False
+		)
+	PersonPostcode = forms.CharField(
+		max_length = 10,
+		required = False
+		)
+	PersonCountry = forms.CharField(
+		max_length = 50,
+		required = False
+		)
+
+	PersonPhone = forms.CharField(
+		max_length = 25,
+		required = False
+	)
+
+	PersonComment = forms.CharField(
+		max_length = 144,
+		required = False
+	)
+
+	PersonCattery = forms.ChoiceField(choices=[])
+	
+
+class form_cattery_add(forms.Form):
+	RegisteringPerson = forms.CharField(max_length = 10, required = False)
+	CatteryName = forms.CharField(
+		max_length = 50
+		)
+	CatteryPrefix = forms.BooleanField(required = False)
+	

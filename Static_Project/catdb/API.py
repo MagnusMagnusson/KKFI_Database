@@ -611,3 +611,75 @@ def api_show_enter_litter_judgement(request):
 			}
 	return JsonResponse(D)
 
+def api_person_register(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+	try:		
+		person = people()
+		person.name = request.POST['PersonName']
+		person.ssn = request.POST['PersonSSN']
+		person.address = request.POST['PersonAddress']
+		person.postal = request.POST['PersonPostcode']
+		person.country = request.POST['PersonCountry'] 
+		person.comment = request.POST['PersonComment'] 
+		
+		try:
+			_cattery = request.POST['PersonCattery']
+			catterySet = cattery.objects.filter(id = _cattery)
+			if(len(catterySet) == 0):
+				C = None
+			else:
+				C = catterySet[0]
+		except:
+			C = None
+		person.cattery = C
+		person.save()
+		D = {
+			'success': True,
+			'id' : person.id
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+
+def api_cattery_register(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+	try:		
+		catter = cattery()
+		catter.name = request.POST['CatteryName']
+		catter.prefix = request.POST['CatteryPrefix'] == "true"
+		catter.save()
+		if request.POST['RegisteringPerson'] != "":
+			owner = request.POST['RegisteringPerson']
+			owner = people.objects.get(ssn = owner)
+			if owner.cattery == None:
+				owner.cattery = catter
+				owner.save()
+		
+		D = {
+			'success': True,
+			'id' : catter.id
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
