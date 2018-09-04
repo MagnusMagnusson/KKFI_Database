@@ -14,3 +14,7 @@ ignore/
 ignore\
 ignore/*
 ignore\*
+
+.vagrant
+.vagrant/
+.vagrant\
