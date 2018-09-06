@@ -2,8 +2,8 @@ from django import forms
 from catdb.models import judge
 from catdb.models import litter
 from catdb.models import cert
+from catdb.models import cattery
 import datetime
-from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import extras
 
 genderChoices = ((True,'Male'),(False,'Female'))
@@ -52,6 +52,7 @@ class SearchCat(forms.Form):
 		)
 
 class AddCat(forms.Form):
+
 	now = datetime.datetime.now()
 	name = forms.CharField(
 		required = True,
@@ -61,7 +62,10 @@ class AddCat(forms.Form):
 		required = True,
 		label = "Reg_Nr",
 		max_length = 50
-		)
+		)	
+	
+	CatCattery = forms.ModelChoiceField(required = False,queryset = cattery.objects.all())
+
 	gender = forms.ChoiceField(
 		label = "gender",
 		required = True, 
@@ -212,9 +216,6 @@ class form_show_judgement_litter_enter(forms.Form):
 	comment = forms.CharField(max_length = 2048,required = False)
 
 class form_humans_add(forms.Form):
-	def __init__(self,*args,**kwargs):
-		super(form_humans_add,self).__init__(*args,**kwargs)
-		self.fields['PersonCattery'].queryset = judge.objects.all()
 
 	PersonName = forms.CharField(
 		max_length = 50
@@ -247,8 +248,9 @@ class form_humans_add(forms.Form):
 		required = False
 	)
 
-	PersonCattery = forms.ChoiceField(choices=[])
+	PersonPattery = forms.ModelChoiceField(required = False,queryset = cattery.objects.all())
 	
+
 
 class form_cattery_add(forms.Form):
 	RegisteringPerson = forms.CharField(max_length = 10, required = False)

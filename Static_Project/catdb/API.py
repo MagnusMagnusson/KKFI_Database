@@ -32,6 +32,9 @@ def form_cat(request):
 		C.gender = not bool(post['gender'])
 		C.sire = None
 		C.dam = None
+		C.cattery = None
+		if(post['CatCattery'] != ""):
+			C.cattery = cattery.objects.get(id = int(post['CatCattery']))
 		sire = post['sire']
 		dam = post['dam']
 		if(sire):

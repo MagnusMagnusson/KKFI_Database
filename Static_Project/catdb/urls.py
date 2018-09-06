@@ -5,13 +5,17 @@ from . import views
 urlpatterns = [
 	#HTML REQUESTS
     url(r'^(index)*$', views.index, name='index'),
+
 	url(r'^cats/cat/?$',views.catview, name='catview'),
     url(r'^cats/search/?$', views.search, name='search'),
     url(r'^cats/find/?$', views.findcat, name='findcat'),
     url(r'^cats/register/?$', views.addcat, name='addcat'),
     url(r'^cats/edit/?$', views.editCat, name='editCat'),
+
     url(r'^person/register/?$', views.addPerson, name='addPerson'),
+
     url(r'^cattery/register/?$', views.addCattery, name='addCattery'),
+
     url(r'^shows/new/?$', views.addshow, name='addshow'),
     url(r'^shows/setup/?$', views.view_ShowSetup, name='view_ShowSetup'),
     url(r'^shows/manage/?$', views.view_ShowManage, name='view_ShowManage'),

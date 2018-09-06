@@ -29,6 +29,7 @@ class cattery(models.Model):
 	prefix = models.BooleanField()
 	def __str__(self) :
 		s = self.name
+		return s.encode('utf-8').strip()
 
 
 # Cats (part 2)

@@ -17,7 +17,13 @@
 <body>
     {% if cat %}
     <h1>{{cat.name}}</h1>
-    <p>given name: {{cat.name}}</p>
+    <p>given name: {{cat.name}}</p>  
+      
+    {%if cat.cattery %}
+    <p><<i>Cattery: {{cat.cattery.name}}</i></p>
+    {%else%}
+    <p> <i>No cattery is registered.</i></p>
+    {%endif%}
     <p>Born : {{cat.birth}}</p>
     {% if cat.gender%}
         <p>Gender: Female</p>
