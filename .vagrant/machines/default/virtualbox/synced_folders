@@ -1,1 +1,2 @@
-{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"C:/Users/MagnusMagnusson/Documents/GitHub/Gagnagrunnur_kynjakatta","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}},"virtualbox":{"/kkidb_static":{"guestpath":"/kkidb_static","hostpath":"C:/Users/MagnusMagnusson/Documents/GitHub/Gagnagrunnur_kynjakatta/Static_Project","disabled":false,"__vagrantfile":true}}}
+{"virtualbox":{"/vagrant":{"type":"virtualbox","guestpath":"/vagrant","hostpath":"C:/Users/Magnusm/Documents/Git/KKI_Database","disabled":false,"__vagrantfile":true},"/kkidb_static":{"guestpath":"/kkidb_static","hostpath":"C:/Users/Magnusm/Documents/Git/KKI_Database/Static_Project","disabled":false,"__vagrantfile":true}}}
+

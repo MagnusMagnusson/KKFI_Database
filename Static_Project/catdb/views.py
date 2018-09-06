@@ -206,6 +206,25 @@ def addshow(request):
 	return HttpResponse(template.render(context,request))
 
 
+def addCattery(request):
+	form = form_cattery_add()
+	template = loader.get_template('kkidb/cattery/AddCattery.html')
+	context = {
+		'form': form
+		}
+
+	return HttpResponse(template.render(context, request))
+
+def addPerson(request):
+	form = form_humans_add()
+	template = loader.get_template('kkidb/humans/AddPerson.html')
+	context = {
+		'form': form
+		}
+
+	return HttpResponse(template.render(context, request))
+
+
 def view_ShowSetup(request):
 	catAddForm = form_show_entry_add()
 	judgeAddForm = form_show_judge_add()
