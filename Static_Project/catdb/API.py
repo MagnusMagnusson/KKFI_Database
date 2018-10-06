@@ -193,6 +193,8 @@ def api_show_entry_register(request):
 		_entry.catId = _cat
 		_entry.showId = _show
 		_entry.cat_show_number = int(entryNr)
+		if(post['list_nr']):
+			_entry.listId = post['list_nr']
 		_entry.save()
 		D = {'success':True}
 		return JsonResponse(D)
@@ -256,6 +258,10 @@ def api_show_litter_entry_register(request):
 		_litter = litter()
 		_litter.catId = _entry
 		_litter.letterId = letterId
+		
+		if(post['list_nr']):
+			_litter.listId = post['list_nr']
+
 		_litter.save()
 		D = {'success':True}
 		return JsonResponse(D)
@@ -677,6 +683,38 @@ def api_cattery_register(request):
 		D = {
 			'success': True,
 			'id' : catter.id
+			}
+
+	except Exception as ex:
+		D = {
+			'success':False,
+			'error':type(ex).__name__,
+			'message':str(ex)
+			}
+	return JsonResponse(D)
+
+
+def api_ems_register(request):
+	if not request.is_ajax():
+		D = {
+			'success':False,
+			'error':'Invalid request format. Please contact the site administrator if you believe this a mistake.'
+			}
+		return JsonResponse(D)
+	try:		
+		ems = EMS()
+		ems.breed = request.POST['emsBreed']
+		ems.ems = request.POST['ems']
+		if request.POST['emsCategory'] != "":
+			ems.category = request.POST['emsCategory']
+		if request.POST['emsGroup'] != "":
+			ems.group = request.POST['emsGroup']
+		
+		ems.save()
+		D = {
+			'success': True,
+			'id' : ems.id,
+			'code':str(ems)
 			}
 
 	except Exception as ex:

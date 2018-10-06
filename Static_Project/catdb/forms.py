@@ -119,6 +119,7 @@ class form_show_entry_add(forms.Form):
 		max_length = 30
 		)
 	entry_nr = forms.IntegerField();
+	list_nr = forms.IntegerField(required = False);
 
 class form_show_judge_add(forms.Form):
 	judge = forms.CharField(max_length = 50)
@@ -129,11 +130,11 @@ class form_show_litter_add(forms.Form):
 		required = True,
 		max_length = 50
 		)
-
 		litterLetter = forms.CharField(
 		required = True,
 		max_length = 2
 		)
+		list_nr = forms.IntegerField(required = False);
 
 class form_show_judgement_enter(forms.Form):
 	def __init__(self,*args,**kwargs):
@@ -250,6 +251,12 @@ class form_humans_add(forms.Form):
 
 	PersonPattery = forms.ModelChoiceField(required = False,queryset = cattery.objects.all())
 	
+class form_ems_add(forms.Form):
+	emsBreed = forms.CharField(max_length = 3)
+	ems = forms.CharField(max_length = 15)
+	emsCategory = forms.IntegerField(required = False)
+	emsGroup = forms.IntegerField(required = False)
+
 
 
 class form_cattery_add(forms.Form):

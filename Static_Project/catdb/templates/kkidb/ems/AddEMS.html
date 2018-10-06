@@ -1,0 +1,75 @@
+﻿{% extends 'kkidb/shared/master.html' %}
+
+{%block title%}
+Register ems code
+{% endblock%}
+    
+   <h2>Register ems code</h2> 
+
+{%block content%}
+<form id="addButton" action="POST">
+    {% for field in form %}
+    <p>{{field.label_tag}}</p>{{field}}<br/>
+    {% endfor %}
+    {% csrf_token %}
+<input type="submit" ></input>
+</form>
+    <div id="message"></div>
+{%endblock%}
+
+{%block scripts%}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                } 
+            }
+        });
+
+        $("#addButton").submit(
+            function (event) {
+            event.preventDefault();
+
+            var form = document.forms[0];
+            var D = {};
+            var inputs = form.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            var inputs = form.getElementsByTagName('select');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'api_ems_register' %}",
+                dataType: 'json',
+                data: D,
+                success: function (d) {
+                    if (d.success) {
+                        $('#message').html("<h2> IT WORKED. New ems code at " + d.id + " with code "+ d.code+" </h2>")
+                    }
+                    else {
+                        $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                    }
+
+                }
+            });
+            return false;
+        });
+
+      
+    });
+
+ 
+</script>
+{%endblock%}

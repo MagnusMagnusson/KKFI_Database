@@ -101,18 +101,18 @@ class CatDbHelper():
 		D['litters'] = litterNoms
 
 		#Kittens
-		min_date = monthdelta(datetime.now().date(),-7)
+		min_date = monthdelta(_show.date,-7)
 		_kittenCats = _allCats.filter(entryId__catId__birth__gte = min_date)
 		D['Kittens'] = _kittenCats
 
 		#Younglings
-		min_date = monthdelta(datetime.now().date(),-10)
-		max_date = monthdelta(datetime.now().date(),-7)
+		min_date = monthdelta(_show.date,-10)
+		max_date = monthdelta(_show.date,-7)
 		_youngCats = _allCats.filter(entryId__catId__birth__gt = min_date, entryId__catId__birth__lte = max_date)
 		D['Younglings'] = _youngCats
 
 		# adults
-		max_date = monthdelta(datetime.now().date(),-10)
+		max_date = monthdelta(_show.date,-10)
 		_adults = _allCats.exclude(entryId__catId__birth__gt = max_date)
 		_neutered = _adults.filter(entryId__catId__neutered__isnull=False)
 		_nonNeutered = _adults.exclude(entryId__catId__neutered__isnull=False)
@@ -129,9 +129,23 @@ class CatDbHelper():
 		return D
 
 
+def getClass(catEntry):
+		kittenDelta = monthdelta(_show.date,-10)
+		kittenDelta = monthdelta(_show.date,-7)
+		_cat = catEntry.catId
+
 def monthdelta(date, delta):
 	m, y = (date.month+delta) % 12, date.year + ((date.month)+delta-1) // 12
 	if not m: m = 12
 	d = min(date.day, [31,
 		29 if y%4==0 and not y%400==0 else 28,31,30,31,30,31,31,30,31,30,31][m-1])
 	return date.replace(day=d,month=m, year=y)
+
+def timeDelta(oldDate,newDate):
+	m = newDate.month - oldDate.month
+	y = oldDate.year - newDate.year 
+	if m < 0:
+		m += 12
+		y -= 1
+	return (y,m)
+

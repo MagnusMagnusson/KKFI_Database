@@ -110,10 +110,13 @@ class show_entry(models.Model):
 	showId =  models.ForeignKey('show',on_delete = models.CASCADE)
 	catId = models.ForeignKey('cat',on_delete = models.CASCADE) 
 	cat_show_number = models.IntegerField(null = False) # what number this cat is on the show. 
+	listId = models.IntegerField(null = True)
 
 class litter(models.Model):
 	catId = models.OneToOneField('show_entry',on_delete = models.CASCADE) 
-	letterId = models.CharField(max_length = 2)
+	letterId = models.CharField(max_length = 2)	
+	listId = models.IntegerField(null = True)
+
 
 class judge(models.Model):
 	id = models.AutoField(primary_key = True)
