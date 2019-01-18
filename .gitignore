@@ -17,3 +17,5 @@ Static_Project/catdb/migrations
 ignore/
 ignore\
 ignore
+
+*.pyc

@@ -101,15 +101,11 @@ class Command(BaseCommand):
 						if(len(row[21]) > 5):
 							N.date = datetime.strptime(row[21], '%d.%m.%y %H:%M')
 						N.save()
-					
-					try:
-						Point = cert.objects.get(certName = "CAC",certRank = 1)
-					except: 
-						print("Master detected")
+					Point = cert.objects.get(certName = "CAC",certRank = 1)
+
 					for i in range(38,63):
 						if(row[i] == "false"):
 							break
-						
 						givenPoint = cert_judgement()
 						givenPoint.cat = C
 						givenPoint.judgement = None
@@ -125,7 +121,7 @@ class Command(BaseCommand):
 					try:
 						Point = cert.objects.get(certName = "CAP",certRank = 1)
 					except:
-						contineu
+						continue
 					for i in range(63,88):
 						if(row[i] == "false"):
 							break

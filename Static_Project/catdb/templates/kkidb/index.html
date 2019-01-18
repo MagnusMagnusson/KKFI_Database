@@ -1,18 +1,36 @@
-﻿<!DOCTYPE html>
+﻿{% extends 'kkidb/shared/master.html' %}
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>Kkidb database</title>
-</head>
-<body>
-    <ul>
-        <li>
-            <a href="{% url 'addcat' %}">Go to all cats</a><br/>
-            <a href="cats/search">search the database</a><br/>
-            <a href="cats/addcat">Add a new cat</a><br/>
-            <a href="shows">Manage shows</a><br/>
-        </li>
-    </ul>
-</body>
-</html>
+{% block content %}
+<h1>Master directory list.</h1>
+<h2>Cat pages</h2>
+<ul>
+    <li><a href="{% url 'addcat'%}">Create Cat</a></li>
+    <li><a href="{% url 'catview'%}">View Cat (needs arguments)</a></li>
+    <li><a href="{% url 'search'%}">Search Cat</a></li>
+    <li><a href="{% url 'findcat'%}">Find Cat (needs arguments)</a></li>
+    <li><a href="{% url 'editCat'%}">Edit Cat (needs arguments)</a></li>
+</ul>
+
+<h2>Person pages</h2>
+<ul>
+    <li><a href="{% url 'addPerson'%}">Register Person</a></li>
+</ul>
+
+<h2>Catteries</h2>
+<ul>
+    <li><a href="{% url 'addCattery'%}">Register New Cattery</a></li>
+</ul>
+
+<h2>Shows</h2>
+<ul><li><a href="{% url 'findshow'%}">Find all shows</a></li>
+    <li><a href="{% url 'addshow'%}">Register New Show</a></li>
+    <li><a href="{% url 'view_ShowSetup'%}">Set up registered show*</a></li>
+    <li><a href="{% url 'view_ShowManage'%}">Manage show*</a></li>
+    <li><a href="{% url 'view_DeleteJudgements'%}">Delete Judgement*</a></li>
+    <li><a href="{% url 'view_EditJudgements'%}">Edit Judgement*</a></li>
+    <li><a href="{% url 'view_ShowJudgements'%}">View Judgement*</a></li>
+    <li><a href="{% url 'view_ShowNominations'%}">Get Nominations*</a></li>
+    <li><a href="{% url 'view_ShowViewEntries'%}">View the entries*</a></li>
+</ul>
+
+{% endblock %}

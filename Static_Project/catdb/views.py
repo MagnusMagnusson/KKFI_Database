@@ -9,6 +9,7 @@ from django.utils.encoding import *
 from catdb.models import *
 from forms import *
 from DatabaseHelpers import CatDbHelper
+from DatabaseHelpers import timeDelta
 import time
 import datetime
 from API import *	
@@ -103,7 +104,7 @@ def kitty(request):
 	return HttpResponse(template.render(context, request))
 
 def catview(request):
-	template = loader.get_template('kkidb/ViewCat.html')
+	template = loader.get_template('kkidb/cat/ViewCat.html')
 	view = request.GET.get('view')
 	if(view != ''):
 		c = cat.objects.all()
@@ -178,7 +179,7 @@ def editCat(request):
 
 def addcat(request):
 	form = AddCat()
-	template = loader.get_template('kkidb/AddCat.html')
+	template = loader.get_template('kkidb/cat/AddCat.html')
 	context = {
 		'form': form
 		}
@@ -224,6 +225,13 @@ def addPerson(request):
 
 	return HttpResponse(template.render(context, request))
 
+def view_addEms(request):
+	emsAddForm = form_ems_add()
+	template = loader.get_template('kkidb/ems/AddEMS.html')
+	context = {
+		'form':emsAddForm
+	}
+	return HttpResponse(template.render(context,request))
 
 def view_ShowSetup(request):
 	catAddForm = form_show_entry_add()
@@ -306,17 +314,18 @@ def view_DeleteJudgements(request):
 
 def view_EditJudgements(request):
 	j = judgement.objects.get(id = request.GET['id'])
-	judgementEditForm = form_show_judgement_enter(show_id = j.showId_id,
-											   initial={
-												   'entryCatId':j.entryId.cat_show_number,
-												   'abs': not j.attendence,
-												   'judge': j.judge,
-												   'ex' : j.ex,
-												   'cert' : j.cert,
-												   'biv' : j.biv,
-												   'nom' : j.nom,
-												   'comment' : j.comment
-												   })
+	judgementEditForm = form_show_judgement_enter(
+		show_id = j.showId_id,
+		initial={
+			'entryCatId':j.entryId.cat_show_number,
+			'abs': not j.attendence,
+			'judge': j.judge,
+			'ex' : j.ex,
+			'cert' : j.cert,
+			'biv' : j.biv,
+			'nom' : j.nom,
+			'comment' : j.comment
+	})
 	template = loader.get_template('kkidb/show/EditJudgement.html')
 	context = {
 		'judgementEditForm':judgementEditForm,
@@ -342,9 +351,7 @@ def view_ShowViewEntries(request):
 		}
 	return HttpResponse(template.render(context, request))
 
-
-
-def view_ShowNominations(request):
+def file_ShowNominations(request):
 
     # Create the HttpResponse object with the appropriate CSV header.
 	D = CatDbHelper.getNominations(int(request.GET['show']))
@@ -402,7 +409,26 @@ def view_ShowNominations(request):
 
 	return response
 
- 
+def file_JudgeSheets(request):
+	#Show number, age, birthdate
+	#Flokkur (12-1), ems, dómari
+	show = request.GET['show']
+	entries = show_entry.objects.filter(listId_in = request.GET['list'])
+
+	
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment; filename="JudgeList.csv"'
+	writer = csv.writer(response)
+	for catEntry in entries:
+		cat = catEntry.catId
+		delta = timeDelta(cat.birth,show.date)
+		age = delta[0] + " years & " + delta[1] + " months"
+		writer.writerow([catEntry.cat_show_number,cat.cat_EMS.ems.ems])
+		writer.writerow([cat.birth,cat.cat_EMS.ems.ems,age])
+
+	return response
+
+
 
 def fourohfour(request):
 	template = loader.get_template('kkidb/404.html')

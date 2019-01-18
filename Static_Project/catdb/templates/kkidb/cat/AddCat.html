@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>
+        test
+    </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    
+   <h2>Add cat</h2> 
+<form id="addButton" action="POST">
+    <p>{{nom}}</p>
+    {% for field in form %}
+    <p>{{field.label_tag}}</p>{{field}}<br/>
+    {% endfor %}
+    {% csrf_token %}
+<input type="submit" ></input>
+</form>
+    <div id="message"></div>
+</body>
+</html>
+<script type="text/javascript">
+    FORM = {
+        nameList: {'sire':[],'dam':[]},
+        update_message: function (arr) {
+            var ActElement = document.activeElement;
+            
+            mess = "found " + arr.length + " cats: <ul>";
+            for (var i = 0; i < arr.length; i++) {
+                mess += "<li>" + arr[i].name + " : " + arr[i].id + " </li>";
+            }
+            mess += "</ul>"
+            $('#message').html("<h2> kitties: " + mess + " </h2>")
+        },
+        finalList: function(x,formName){
+            x = x.toLowerCase();
+            var foundName = []
+            var _list = this.nameList[formName]
+            for (var i = 0; i < _list.length; i++) {
+                if (_list[i].name.toLowerCase().indexOf(x) != -1) {
+                    foundName.push(_list[i]);
+                }
+            }
+            return foundName;
+        }
+    };
+
+    $(document).ready(function () {
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $("#addButton").submit(function (event) {
+            event.preventDefault();
+
+            var form = document.forms[0];
+            var D = {};
+            var inputs = form.getElementsByTagName('input');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            var inputs = form.getElementsByTagName('select');
+            for (var i = 0; i < inputs.length; i++) {
+                D[inputs[i].name] = inputs[i].value;
+            }
+            var parent_value = FORM.finalList($("input[name = 'sire']").val(), 'sire');
+            if (parent_value.length == 1) {
+                D['sire'] = parent_value[0].id;
+            }
+            else {
+                D['sire'] = null;
+            }
+            parent_value = FORM.finalList($("input[name = 'dam']").val(), 'dam');
+            if (parent_value.length == 1) {
+                D['dam'] = parent_value[0].id;
+            }
+            else {
+                D['dam'] = null;
+            }
+            if (checkform(form)) {
+                $.ajax({
+                    type: "POST",
+                    url: "../form_cat/",
+                    dataType: 'json',
+                    data: D,
+                    success: function (d) {
+                        if (d.success) {
+                            $('#message').html("<h2> IT WORKED. New cat at " + d.id + " </h2>")
+                        }
+                        else {
+                            $('#message').html("<h2> error " + d.error + " occurred</h2>")
+                        }
+
+                    }
+                });
+            }
+            return false;
+        });
+
+        function nameListFiller(x, formName) {
+            if (x.length == 3) { //Get a list of all names containing the three letter substring from the database.
+                getCatNames(x,formName);
+            }
+            else {
+                if (x.length > 3) { //Take the list of names already retrieved from the database and filter the new string trough it. 
+                    FORM.update_message(FORM.finalList(x,formName));
+                }
+                else { //Too little information, display no names.
+                    FORM.update_message([]);
+                }
+            }
+        };
+
+        $("input[name = 'sire']").on('input', function () {
+            var val = $("input[name = 'sire']").val();
+            nameListFiller(val,'sire');
+        });
+        $("input[name = 'dam']").on('input', function () {
+            var val = $("input[name = 'dam']").val();
+            nameListFiller(val,'dam');
+        });
+        $("input[name = 'sire']").on('focus', function () {
+            var val = $("input[name = 'sire']").val();
+            nameListFiller(val, 'sire');
+        });
+        $("input[name = 'dam']").on('focus', function () {
+            var val = $("input[name = 'dam']").val();
+            nameListFiller(val, 'dam');
+        });
+    });
+
+    function checkform(form) {
+        // get all the inputs within the submitted form
+        var inputs = form.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            // only validate the inputs that have the required attribute
+            if (inputs[i].hasAttribute("required")) {
+                if (inputs[i].value == "") {
+                    // found an empty field that is required
+                    alert("Please fill all required fields");
+                    return false;
+                }
+            }
+        }
+        if (FORM.finalList($("input[name = 'sire']").val(), 'sire').length <= 1 &&
+            FORM.finalList($("input[name = 'dam']").val(),'dam').length <= 1) {
+            return true;
+        }
+        else {
+            alert("Ambiquity in parents");
+            return false;
+        }
+    }
+    function getCatNames(name,type) { 
+        D = {'name':name,'gender':type}
+        $.ajax({
+        type: "GET",
+        url: "../find_cat_name/",
+        dataType: 'json',
+        data: D,
+        success: function (d) {
+            if (d.success) {
+                FORM.nameList[d.type] = d.cats;
+                FORM.update_message(FORM.nameList[d.type]);
+            }
+            else {
+                $('#message').html("<h2> error " + d.error + " occurred</h2>")
+            }
+
+        }
+    });
+    }
+
+</script>
