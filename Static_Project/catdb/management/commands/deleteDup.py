@@ -30,18 +30,18 @@ class Command(BaseCommand):
 			done = 0
 			for row in spamreader:
 				try:
-					kitty = cat.objects.get(reg_nr = row[0])
-					test = show_entry.objects.filter(catId = kitty, showId = 4)
-					if len(test) > 0:
-						continue
-					else:
-						entry = show_entry()
-						entry.showId = show.objects.get(id = 4)
-						entry.catId = kitty
-						entry.cat_show_number = row[1]
-						done += 1
-						entry.save()
+					c = cat.objects.filter(reg_nr = row[0])
+					if(len(c) > 1):
+						print(str(row[0]) + " has too many cats")
+						first = True
+						for fakecat in c:
+							if(first):
+								first = False
+								continue
+							else:
+								fakecat.delete()
 				except Exception as ex:
+					print("There is no cat with nr " + str(row[0]))
 					print(ex)
 			print(str(done) + "/"+str(Length) + " done")
 				

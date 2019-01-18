@@ -42,6 +42,8 @@ urlpatterns = [
 	url(r'^api/shows/enterLitterJudgement', views.api_show_enter_litter_judgement, name='api_show_enter_litter_judgement'),
 	url(r'^api/judge/find_judge_name', views.api_judge_search_name, name='api_judge_search_name'),
 	url(r'^api/persons/register', views.api_person_register, name='api_person_register'),
+	url(r'^api/file/nomtag', views.api_file_nomtags, name='api_person_register'),
+
 	url(r'^form_cat', views.form_cat, name='form_cat'),
 	url(r'^find_cat_name', views.find_cat_names, name='find_cat_names'),
     

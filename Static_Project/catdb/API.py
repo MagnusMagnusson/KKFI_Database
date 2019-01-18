@@ -12,6 +12,7 @@ from .forms import AddCat
 import time
 from datetime import datetime
 from datetime import date
+import fileApi
 from DatabaseHelpers import CatDbHelper
 import re
 
@@ -309,7 +310,7 @@ def api_entry_search_name(request):
 		for e in entries:
 			entr.append({
 				'name':e.catId.name,
-				'id':e.cat_show_number
+				'id':e.id
 				})		
 		D = {
 			'success':True,
@@ -665,7 +666,6 @@ def api_cattery_register(request):
 	try:		
 		catter = cattery()
 		catter.name = request.POST['CatteryName']
-		catter.prefix = request.POST['CatteryPrefix'] == "true"
 		catter.save()
 		if request.POST['RegisteringPerson'] != "":
 			owner = request.POST['RegisteringPerson']
@@ -686,3 +686,14 @@ def api_cattery_register(request):
 			'message':str(ex)
 			}
 	return JsonResponse(D)
+
+def api_file_nomtags(request):
+	D = CatDbHelper.getNominations(int(request.GET['show']))	
+	try: 
+		buff = fileApi.get_nomtag(D)
+	except Exception as ex:
+		return HttpResponse(ex)
+
+	response = HttpResponse(buff.getvalue(), content_type='application/zip/')
+	response['Content-Disposition'] = 'attachment; filename="NominationTags.zip"'
+	return response

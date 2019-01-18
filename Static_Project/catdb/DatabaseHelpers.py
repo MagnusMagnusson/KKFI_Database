@@ -37,9 +37,17 @@ class CatDbHelper():
 				D['Ncert'] = _Npoint.latest('date')
 
 			if(_neuter):
-				D['nextCert'] = cert.objects.filter(predecessor =  D['Ncert'].cert if D['Ncert'] else None, neutered = True)[0]
+				D['nextCert'] = cert.objects.filter(predecessor =  D['Ncert'].cert if D['Ncert'] else None, neutered = True)
+				if len(D['nextCert']) > 0:
+					D['nextCert'] = D['nextCert'][0]
+				else:
+					D['nextCert'] = None
 			else:
-				D['nextCert'] = cert.objects.filter(predecessor = D['cert'].cert if D['cert'] else None , neutered = False)[0]
+				D['nextCert'] = cert.objects.filter(predecessor = D['cert'].cert if D['cert'] else None , neutered = False)
+				if len(D['nextCert']) > 0:
+					D['nextCert'] = D['nextCert'][0]
+				else:
+					D['nextCert'] = None
 			D['success'] = True
 			return D
 

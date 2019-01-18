@@ -257,5 +257,4 @@ class form_cattery_add(forms.Form):
 	CatteryName = forms.CharField(
 		max_length = 50
 		)
-	CatteryPrefix = forms.BooleanField(required = False)
 	

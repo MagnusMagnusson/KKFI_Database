@@ -26,7 +26,6 @@ class cat_owners(models.Model):
 class cattery(models.Model):
 	id = models.AutoField(primary_key = True)
 	name = models.CharField(max_length = 50, unique = True)
-	prefix = models.BooleanField()
 	def __str__(self) :
 		s = self.name
 		return s.encode('utf-8').strip()
@@ -35,7 +34,7 @@ class cattery(models.Model):
 # Cats (part 2)
 class cat(models.Model):
 	id = models.AutoField(primary_key = True)
-	reg_nr = models.CharField(max_length = 5)
+	reg_nr = models.CharField(max_length = 5, unique = True)
 	name = models.CharField(max_length = 50)
 	gender = models.BooleanField()
 	birth = models.DateField()

@@ -7,8 +7,7 @@ from catdb.models import *
 from django.utils import timezone
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
-from datetime import date
+import datetime
 from django.db import transaction
 
 
@@ -38,7 +37,7 @@ class Command(BaseCommand):
 					if(len(isneutered) == 0):
 						N = neutered()
 						N.catId = C[0]
-						N.date = None
+						N.date = datetime.date.today() - datetime.timedelta(days=2)
 						N.save()
 						done += 1
 				if((100*done/Length) >= 100*lastpercent):
